@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JustMads – Vintage & Upcycling</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="jm-header">
+    <nav class="jm-nav">
+      <div class="jm-logo">
+        <span class="jm-logo-main">JustMads</span>
+        <span class="jm-logo-sub">vintage & upcycling</span>
+      </div>
+      <div class="jm-nav-center">
+        <a href="index.html" class="jm-nav-link">Strona główna</a>
+        <a href="shop.html" class="jm-nav-link">Sklep</a>
+        <a href="#about" class="jm-nav-link">O marce</a>
+      </div>
+    </nav>
+
+    <section class="jm-hero">
+      <div class="jm-hero-text">
+        <h1>Vintage, który ma już historię.<br>Ty dopisujesz resztę.</h1>
+        <p class="jm-hero-sub">
+          Wyselekcjonowane second hand, upcycling i trochę porcelanowych perełek – wszystko ręcznie wybrane, bez fast fashion.
+        </p>
+        <div class="jm-hero-cta">
+          <a href="shop.html" class="jm-btn-primary">Przejdź do sklepu →</a>
+          <a href="shop.html" class="jm-btn-secondary">Zobacz kategorię Upcycled</a>
+        </div>
+      </div>
+    </section>
+  </header>
+
+  <main class="jm-section" id="about">
+    <section class="jm-section-inner">
+      <h2>Mały sklep, dużo serca</h2>
+      <p>
+        JustMads to butikowy projekt z vintage, second hand i upcyklingiem. Sklep dopiero startuje – stopniowo będą pojawiały się tu wszystkie perełki, które masz już na Vinted i Instagramie.
+      </p>
+    </section>
+  </main>
+
+  <footer class="jm-footer">
+    <p>© <span id="year"></span> JustMads</p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

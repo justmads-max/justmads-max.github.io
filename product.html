@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Produkt – JustMads</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="jm-header">
+    <nav class="jm-nav">
+      <div class="jm-logo">
+        <span class="jm-logo-main">JustMads</span>
+        <span class="jm-logo-sub">vintage & upcycling</span>
+      </div>
+      <div class="jm-nav-center">
+        <a href="index.html" class="jm-nav-link">Strona główna</a>
+        <a href="shop.html" class="jm-nav-link">Sklep</a>
+        <a href="index.html#about" class="jm-nav-link">O marce</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="jm-section">
+    <div id="product" class="jm-product-layout"></div>
+  </main>
+
+  <footer class="jm-footer">
+    <p>© <span id="year"></span> JustMads</p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+  <script src="sheet-config.js"></script>
+  <script src="sheet-data.js"></script>
+  <script src="product-sheet.js"></script>
+</body>
+</html>
