@@ -1,115 +1,134 @@
 // product-sheet.js
-// Widok pojedynczego produktu na stronie product.html
+// Strona pojedynczego produktu – zdjęcie po lewej, opis po prawej
 
-document.addEventListener("DOMContentLoaded", () => {
-  const productContainer = document.getElementById("product");
+document.addEventListener("DOMContentLoaded", async () => {
+  const container = document.getElementById("product");
+  if (!container) return;
 
-  function getProductIdFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("id");
+  // ID produktu z URL (product.html?id=001)
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  let products = [];
+  try {
+    products = await loadJMProducts();
+  } catch (e) {
+    console.error("Błąd przy ładowaniu produktów:", e);
+    container.innerHTML = "<p>Nie udało się załadować produktu.</p>";
+    return;
   }
 
-  function createEl(tag, className, text) {
-    const el = document.createElement(tag);
-    if (className) el.className = className;
-    if (text != null) el.textContent = text;
-    return el;
+  const product = products.find((p) => String(p.id) === String(id));
+  if (!product) {
+    container.innerHTML = "<p>Nie znaleziono produktu.</p>";
+    return;
   }
 
-  async function init() {
-    const productId = getProductIdFromUrl();
-    if (!productId) {
-      productContainer.textContent = "Nie znaleziono produktu (brak ID w adresie).";
-      return;
-    }
+  const {
+    name_pl,
+    name_en,
+    price_pln,
+    size,
+    brand,
+    materials,
+    length_total,
+    width_p2p,
+    width_waist,
+    width_hips,
+    shoulder_width,
+    sleeve_pit,
+    length_bottom,
+    inseam,
+    desc_pl,
+  } = product;
 
-    let products = [];
-    try {
-      products = await loadJMProducts();
-    } catch (e) {
-      console.error("Błąd ładowania produktów:", e);
-      productContainer.textContent = "Nie udało się załadować danych produktu.";
-      return;
-    }
+  const images = (product.images && product.images.length ? product.images : []);
+  const mainImg = images[0] || "";
 
-    const product = products.find((p) => String(p.id) === String(productId));
+  // Budujemy HTML: lewa kolumna (galeria), prawa (detale)
+  container.innerHTML = `
+    <div class="jm-product-gallery">
+      ${
+        mainImg
+          ? `<img id="jm-main-image" src="${mainImg}" alt="${name_pl || name_en || ""}" />`
+          : `<div class="jm-product-placeholder">Brak zdjęcia produktu</div>`
+      }
+      ${
+        images.length > 1
+          ? `<div class="jm-product-thumbs">
+              ${images
+                .map(
+                  (src, idx) =>
+                    `<button class="jm-product-thumb-btn" data-idx="${idx}">
+                      zdjęcie ${idx + 1}
+                    </button>`
+                )
+                .join("")}
+            </div>`
+          : ""
+      }
+    </div>
+    <div class="jm-product-details">
+      <h1 class="jm-product-title">
+        ${name_pl || name_en || `Produkt ${product.id}`}
+      </h1>
 
-    if (!product) {
-      productContainer.textContent = "Produkt nie został znaleziony.";
-      return;
-    }
-
-    // ----------- Layout: lewa część (zdjęcia), prawa część (info) -----------
-    productContainer.innerHTML = "";
-
-    const layout = createEl("div", "jm-product-layout-inner");
-
-    // GALERIA
-    const gallery = createEl("div", "jm-product-gallery");
-
-    const mainImg = createEl("img", "jm-product-main-image");
-    mainImg.id = "product-main-image";
-
-    const thumbsWrapper = createEl("div", "jm-product-thumbs");
-    thumbsWrapper.id = "product-thumbs";
-
-    if (product.images && product.images.length > 0) {
-      // pierwsze zdjęcie jako główne
-      mainImg.src = product.images[0];
-      mainImg.alt =
-        product.name_pl || product.name_en || "Zdjęcie produktu JustMads";
-
-      // przyciski do zmiany zdjęcia
-      product.images.forEach((src, idx) => {
-        const btn = createEl(
-          "button",
-          "jm-product-thumb-btn",
-          `zdjęcie ${idx + 1}`
-        );
-
-        if (idx === 0) {
-          btn.classList.add("active");
+      <div class="jm-product-price-line">
+        ${
+          price_pln
+            ? `<span class="jm-product-price">${price_pln} PLN</span>`
+            : ""
         }
+        ${
+          size
+            ? `<span class="jm-product-size-tag">${size}</span>`
+            : ""
+        }
+      </div>
 
-        btn.addEventListener("click", () => {
-          mainImg.src = src;
-          const all = thumbsWrapper.querySelectorAll(".jm-product-thumb-btn");
-          all.forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-        });
+      ${
+        brand
+          ? `<p class="jm-product-brand"><strong>Marka:</strong> ${brand}</p>`
+          : ""
+      }
+      ${
+        materials
+          ? `<p class="jm-product-materials"><strong>Skład:</strong> ${materials}</p>`
+          : ""
+      }
 
-        thumbsWrapper.appendChild(btn);
+      ${
+        desc_pl
+          ? `<p class="jm-product-desc">
+              ${desc_pl}
+            </p>`
+          : ""
+      }
+
+      <div class="jm-product-measurements">
+        <h2>Wymiary</h2>
+        <ul>
+          ${length_total ? `<li>Długość całkowita: ${length_total} cm</li>` : ""}
+          ${width_p2p ? `<li>Szerokość pod pachami (p2p): ${width_p2p} cm</li>` : ""}
+          ${width_waist ? `<li>Szerokość w talii: ${width_waist} cm</li>` : ""}
+          ${width_hips ? `<li>Szerokość w biodrach: ${width_hips} cm</li>` : ""}
+          ${shoulder_width ? `<li>Szerokość w ramionach: ${shoulder_width} cm</li>` : ""}
+          ${sleeve_pit ? `<li>Długość rękawa od pachy: ${sleeve_pit} cm</li>` : ""}
+          ${length_bottom ? `<li>Długość nogawki od kroku: ${length_bottom} cm</li>` : ""}
+          ${inseam ? `<li>Długość wewnętrzna nogawki: ${inseam} cm</li>` : ""}
+        </ul>
+      </div>
+    </div>
+  `;
+
+  // Obsługa kliknięcia w miniatury – podmiana głównego zdjęcia
+  const mainImageEl = document.getElementById("jm-main-image");
+  if (mainImageEl && images.length > 1) {
+    container.querySelectorAll(".jm-product-thumb-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const idx = Number(btn.dataset.idx || 0);
+        mainImageEl.src = images[idx];
       });
-    } else {
-      mainImg.alt = "Brak zdjęcia produktu";
-    }
-
-    gallery.appendChild(mainImg);
-    gallery.appendChild(thumbsWrapper);
-
-    // INFO O PRODUKCIE
-    const info = createEl("div", "jm-product-info");
-
-    const title = createEl("h1", "jm-product-title", product.name_pl || "");
-    const price = createEl(
-      "div",
-      "jm-product-price",
-      product.price_pln ? `${product.price_pln} PLN` : ""
-    );
-    const desc = createEl(
-      "p",
-      "jm-product-desc",
-      product.desc_pl || ""
-    );
-
-    info.appendChild(title);
-    info.appendChild(price);
-    info.appendChild(desc);
-
-    layout.appendChild(gallery);
-    layout.appendChild(info);
-    productContainer.appendChild(layout);
+    });
   }
-
-  init();
 });
