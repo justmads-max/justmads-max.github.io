@@ -1,0 +1,232 @@
+*,
+*::before,
+*::after{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#050608;
+  color:#f7f5f2;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+
+/* NAV + HEADER */
+
+.jm-header{
+  background:radial-gradient(circle at top left,#f3c6ff 0,rgba(5,6,8,0.6) 40%,#050608 80%);
+  padding-bottom:2rem;
+}
+.jm-nav{
+  max-width:1120px;
+  margin:0 auto;
+  padding:1.2rem 1.5rem;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1.5rem;
+}
+.jm-logo{display:flex;flex-direction:column}
+.jm-logo-main{font-weight:700;font-size:1.3rem;letter-spacing:.08em;text-transform:uppercase}
+.jm-logo-sub{font-size:.8rem;opacity:.8}
+.jm-nav-center{display:flex;gap:1rem;font-size:.95rem}
+.jm-nav-link{opacity:.9}
+.jm-nav-link:hover{opacity:1;text-decoration:underline}
+
+/* HERO */
+
+.jm-hero{
+  max-width:1120px;
+  margin:0 auto;
+  padding:0 1.5rem 2.5rem;
+}
+.jm-hero-text{max-width:620px}
+.jm-hero h1{
+  font-size:clamp(2rem,4vw,2.6rem);
+  line-height:1.2;
+  margin:0 0 1rem;
+}
+.jm-hero-sub{
+  margin:0 0 1.5rem;
+  opacity:.9;
+}
+.jm-hero-cta{display:flex;flex-wrap:wrap;gap:.8rem}
+.jm-btn-primary,
+.jm-btn-secondary{
+  border-radius:999px;
+  padding:.7rem 1.4rem;
+  font-size:.9rem;
+  border:1px solid transparent;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.jm-btn-primary{
+  background:#f7f5f2;
+  color:#050608;
+}
+.jm-btn-primary:hover{background:#e7e3dc}
+.jm-btn-secondary{
+  background:transparent;
+  color:#f7f5f2;
+  border-color:rgba(247,245,242,.4);
+}
+.jm-btn-secondary:hover{
+  background:rgba(247,245,242,.1);
+}
+
+/* GENERAL LAYOUT */
+
+.jm-section{
+  max-width:1120px;
+  margin:0 auto;
+  padding:2.4rem 1.5rem 3rem;
+}
+.jm-section-inner h2{margin-top:0;font-size:1.3rem}
+.jm-section-inner p{max-width:720px;opacity:.9}
+
+/* SHOP GRID */
+
+#products{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:1.3rem;
+  margin-top:1.5rem;
+}
+.jm-card{
+  border-radius:1.3rem;
+  border:1px solid rgba(247,245,242,.15);
+  padding:1.1rem 1.2rem;
+  background:linear-gradient(145deg,rgba(12,12,15,.9),rgba(35,28,40,.9));
+}
+.jm-card:hover{border-color:rgba(243,198,255,.8)}
+
+/* PRODUCT LIST CARDS – SMALL THUMB + TITLE + PRICE SIDE BY SIDE */
+
+.jm-card--product{
+  display:flex;
+  align-items:center;
+  gap:.9rem;
+  padding:.8rem .9rem;
+}
+.jm-card-image{
+  width:120px;
+  height:150px;
+  object-fit:cover;
+  border-radius:.9rem;
+  flex-shrink:0;
+  background:#000;
+}
+.jm-card-body h3{
+  margin:0 0 .2rem;
+  font-size:.96rem;
+}
+.jm-card-body .jm-product-price{
+  margin:0;
+  font-weight:600;
+  font-size:.9rem;
+}
+
+/* PRODUCT PAGE LAYOUT */
+
+.jm-product-layout{
+  display:flex;
+  flex-wrap:wrap;
+  gap:2rem;
+  align-items:flex-start;
+}
+.jm-product-gallery{
+  flex:1 1 260px;
+  max-width:480px;
+}
+.jm-product-main{
+  border-radius:1.3rem;
+  overflow:hidden;
+  background:#000;
+}
+.jm-product-main img{
+  width:100%;
+  height:auto;
+}
+.jm-product-thumbs{
+  margin-top:.7rem;
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+}
+.jm-product-thumb{
+  width:70px;
+  max-height:110px;
+  object-fit:cover;
+  border-radius:.6rem;
+  border:1px solid transparent;
+  cursor:pointer;
+  opacity:.7;
+  background:#000;
+}
+.jm-product-thumb-active{
+  opacity:1;
+  border-color:rgba(243,198,255,.8);
+}
+.jm-product-info{
+  flex:1 1 260px;
+  min-width:0;
+}
+.jm-product-info h1{
+  margin-top:0;
+  margin-bottom:.5rem;
+  font-size:1.4rem;
+}
+.jm-product-price{
+  font-weight:600;
+  margin:.2rem 0 .8rem;
+}
+.jm-product-meta{
+  font-size:.9rem;
+  opacity:.85;
+  margin-top:.4rem;
+}
+
+/* FOOTER */
+
+.jm-footer{
+  border-top:1px solid rgba(247,245,242,.18);
+  padding:1.4rem 1.5rem 2rem;
+  text-align:center;
+  font-size:.85rem;
+  opacity:.8;
+}
+
+/* RESPONSIVE */
+
+@media (max-width:720px){
+  .jm-nav{flex-wrap:wrap}
+  .jm-nav-center{flex-wrap:wrap;justify-content:flex-start}
+  .jm-product-layout{flex-direction:column}
+  .jm-product-gallery{max-width:100%}
+}
+.jm-product-info {
+  padding: 8px 0;
+}
+
+.jm-product-name {
+  font-size: 0.95rem;
+  margin: 0 0 4px;
+}
+
+.jm-product-meta {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  font-size: 0.9rem;
+}
+
+.jm-product-price {
+  font-weight: 600;
+}
+
+.jm-product-size {
+  font-size: 0.85rem;
+  color: #666;
+}
+
