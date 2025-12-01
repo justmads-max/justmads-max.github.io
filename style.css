@@ -326,3 +326,67 @@ img{max-width:100%;display:block}
   margin-left: 4px;
 }
 
+/* === FIX: Tekst w kartach produktów nie wychodzi poza ramkę === */
+
+/* KONTENER KARTY */
+.jm-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+/* ZDJĘCIE */
+.jm-card-image {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* TEKST – wymuszamy, żeby nie wyłaził */
+.jm-card-body {
+  margin-top: 10px;
+  max-height: 90px; /* wysokość sekcji tekstowej */
+  overflow: hidden;
+}
+
+.jm-card-body h3 {
+  margin: 0 0 4px;
+  font-size: 0.92rem;
+  line-height: 1.25;
+  max-height: 50px;        /* dla stałej wysokości */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;   /* max 2 linie nazwy */
+  -webkit-box-orient: vertical;
+  word-break: break-word;  /* łamanie długich słów */
+}
+
+/* CENA + ROZMIAR */
+.jm-product-price {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.jm-product-size-label {
+  color: #bbb;
+  font-size: 0.85rem;
+}
+
+/* Placeholder jako solidna karta */
+.jm-card-image--placeholder {
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f0f0f;
+  color: #999;
+  border-radius: 10px;
+  font-size: 0.85rem;
+}
