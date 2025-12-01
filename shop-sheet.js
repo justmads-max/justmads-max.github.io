@@ -1,5 +1,5 @@
 // shop-sheet.js
-// Lista produktów + filtrowanie po kategoriach (panel po prawej)
+// Lista produktów + drzewko: kategoria -> podkategorie z filtrowaniem
 
 document.addEventListener("DOMContentLoaded", async () => {
   const grid =
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   grid.innerHTML = "";
 
   const cards = [];
-  const categoriesSet = new Set();
+  const categoryMap = new Map(); // category -> Set(subcategory)
 
   products.forEach((p) => {
     if (p.status && String(p.status).toLowerCase() === "sold") return;
@@ -41,16 +41,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     const price_pln = p.price_pln ? `${p.price_pln} PLN` : "";
     const size = p.size || "";
     const img = p.images && p.images.length ? p.images[0] : "";
-    const category = (p.category || "").toString().trim();
 
-    if (category) {
-      categoriesSet.add(category);
+    let category = (p.category || "").toString().trim();
+    let subcat = (p.subcategory || "").toString().trim();
+
+    if (!category && subcat) {
+      category = "Inne";
+    }
+    if (!category) {
+      category = "Inne";
+    }
+
+    // zbieramy kategorie -> podkategorie
+    if (!categoryMap.has(category)) {
+      categoryMap.set(category, new Set());
+    }
+    if (subcat) {
+      categoryMap.get(category).add(subcat);
     }
 
     const card = document.createElement("a");
     card.className = "jm-card jm-card--product";
     card.href = `product.html?id=${encodeURIComponent(p.id)}`;
     card.dataset.category = category.toLowerCase();
+    card.dataset.subcategory = (subcat || "").toLowerCase();
 
     card.innerHTML = `
       ${
@@ -71,54 +85,116 @@ document.addEventListener("DOMContentLoaded", async () => {
     cards.push(card);
   });
 
-  // === Kategorie w sidebarze ===
+  // === Sidebar: kategorie + podkategorie ===
   if (catContainer) {
-    const categories = Array.from(categoriesSet).sort((a, b) =>
+    catContainer.innerHTML = "";
+
+    // przycisk "Wszystko"
+    const allBtn = document.createElement("button");
+    allBtn.type = "button";
+    allBtn.className = "jm-filter-pill jm-filter-pill--active";
+    allBtn.textContent = "Wszystko";
+    allBtn.dataset.filterType = "all";
+    catContainer.appendChild(allBtn);
+
+    allBtn.addEventListener("click", () => {
+      setActiveFilter(allBtn);
+      applyFilter("all", null);
+    });
+
+    // sortujemy kategorie po nazwie
+    const categories = Array.from(categoryMap.keys()).sort((a, b) =>
       a.localeCompare(b, "pl")
     );
 
-    // "Wszystko" na górze
-    const allBtn = createCategoryButton("Wszystko", "all");
-    allBtn.classList.add("jm-filter-pill--active");
-    catContainer.appendChild(allBtn);
+    categories.forEach((catName) => {
+      const subSet = categoryMap.get(catName);
+      const subcategories = Array.from(subSet).sort((a, b) =>
+        a.localeCompare(b, "pl")
+      );
 
-    categories.forEach((cat) => {
-      const key = cat.toLowerCase();
-      const btn = createCategoryButton(cat, key);
-      catContainer.appendChild(btn);
-    });
+      const wrapper = document.createElement("div");
+      wrapper.className = "jm-filter-category";
 
-    function createCategoryButton(label, key) {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "jm-filter-pill";
-      btn.textContent = label;
-      btn.dataset.key = key;
+      // nagłówek kategorii (klik = filtr po kategorii + toggle rozwinięcia)
+      const headerBtn = document.createElement("button");
+      headerBtn.type = "button";
+      headerBtn.className = "jm-filter-category-header";
+      headerBtn.textContent = catName;
+      headerBtn.dataset.filterType = "category";
+      headerBtn.dataset.key = catName.toLowerCase();
 
-      btn.addEventListener("click", () => {
-        // zaznacz aktywny
-        catContainer
-          .querySelectorAll(".jm-filter-pill")
-          .forEach((b) => b.classList.remove("jm-filter-pill--active"));
-        btn.classList.add("jm-filter-pill--active");
+      const caret = document.createElement("span");
+      caret.className = "jm-filter-caret";
+      caret.textContent = "▾";
+      headerBtn.appendChild(caret);
 
-        // filtruj karty
-        filterProducts(key);
+      wrapper.appendChild(headerBtn);
+
+      // kontener na podkategorie
+      const subList = document.createElement("div");
+      subList.className = "jm-filter-sublist jm-filter-sublist--collapsed";
+
+      subcategories.forEach((subName) => {
+        const subBtn = document.createElement("button");
+        subBtn.type = "button";
+        subBtn.className = "jm-filter-pill jm-filter-pill--sub";
+        subBtn.textContent = subName;
+        subBtn.dataset.filterType = "subcategory";
+        subBtn.dataset.key = subName.toLowerCase();
+
+        subBtn.addEventListener("click", () => {
+          setActiveFilter(subBtn);
+          applyFilter("subcategory", subName.toLowerCase());
+        });
+
+        subList.appendChild(subBtn);
       });
 
-      return btn;
+      wrapper.appendChild(subList);
+      catContainer.appendChild(wrapper);
+
+      // klik w nagłówek kategorii
+      headerBtn.addEventListener("click", () => {
+        // filtruj po kategorii
+        setActiveFilter(headerBtn);
+        applyFilter("category", catName.toLowerCase());
+
+        // toggle rozwinięcia
+        subList.classList.toggle("jm-filter-sublist--collapsed");
+        caret.classList.toggle("jm-filter-caret--collapsed");
+      });
+    });
+
+    function setActiveFilter(activeBtn) {
+      // zdejmujemy aktywność ze wszystkiego
+      catContainer
+        .querySelectorAll(
+          ".jm-filter-pill, .jm-filter-category-header"
+        )
+        .forEach((el) => el.classList.remove("jm-filter-pill--active"));
+
+      activeBtn.classList.add("jm-filter-pill--active");
     }
 
-    function filterProducts(key) {
-      const normalized = key === "all" ? "all" : key.toLowerCase();
+    function applyFilter(type, key) {
+      const normalizedKey = key ? key.toLowerCase() : null;
 
       cards.forEach((card) => {
-        const cardCat = (card.dataset.category || "").toLowerCase();
-        if (normalized === "all" || cardCat === normalized) {
-          card.style.display = "";
-        } else {
-          card.style.display = "none";
+        const cat = (card.dataset.category || "").toLowerCase();
+        const sub = (card.dataset.subcategory || "").toLowerCase();
+
+        let visible = true;
+
+        if (type === "all") {
+          visible = true;
+        } else if (type === "category") {
+          visible = cat === normalizedKey;
+        } else if (type === "subcategory") {
+          visible = sub === normalizedKey;
         }
+
+        card.style.display = visible ? "" : "none";
       });
     }
   }

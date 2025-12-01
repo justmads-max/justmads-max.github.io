@@ -447,6 +447,60 @@ img{max-width:100%;display:block}
   color: #050608;
   border-color: #f7f5f2;
 }
+/* === Rozwijane kategorie w sidebarze (kategoria -> podkategorie) === */
+
+.jm-filter-category {
+  margin-bottom: 0.4rem;
+}
+
+.jm-filter-category-header {
+  width: 100%;
+  border-radius: 999px;
+  border: 1px solid rgba(247,245,242,0.3);
+  background: transparent;
+  color: #f7f5f2;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.jm-filter-category-header:hover {
+  background: rgba(247,245,242,0.08);
+}
+
+.jm-filter-caret {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin-left: 0.5rem;
+  transition: transform 0.15s ease;
+}
+
+.jm-filter-caret--collapsed {
+  transform: rotate(-90deg);
+}
+
+.jm-filter-sublist {
+  margin-top: 0.25rem;
+  margin-left: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.jm-filter-sublist--collapsed {
+  display: none;
+}
+
+/* Podkategorie – trochę mniejsze pigułki */
+.jm-filter-pill--sub {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.8rem;
+}
+
 
 /* Mobile – sidebar pod spodem / nad produktami */
 @media (max-width: 900px) {
