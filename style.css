@@ -229,4 +229,64 @@ img{max-width:100%;display:block}
   font-size: 0.85rem;
   color: #666;
 }
+/* === SHOP GRID – ładna siatka kart === */
+
+#shop-grid,
+#products-grid,
+#products,
+#jm-products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+/* Wygląd pojedynczej karty produktu */
+.jm-product-card {
+  background: #050505;
+  border-radius: 14px;
+  padding: 10px;
+  text-decoration: none;
+  color: #ffffff;
+  display: block;
+}
+
+/* Obrazek w karcie */
+.jm-product-image-wrap {
+  background: #111111;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.jm-product-image-wrap img {
+  width: 100%;
+  display: block;
+}
+
+/* Teksty w karcie */
+.jm-product-info {
+  padding: 4px 2px 0;
+}
+
+.jm-product-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.jm-product-meta {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  font-size: 0.9rem;
+}
+
+.jm-product-price {
+  font-weight: 600;
+}
+
+.jm-product-size {
+  font-size: 0.85rem;
+  color: #aaaaaa;
+}
 
