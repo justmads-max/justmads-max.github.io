@@ -517,3 +517,28 @@ img{max-width:100%;display:block}
   }
 }
 
+/* === Ustawienie stałej szerokości kart w sklepie === */
+
+/* Kontener z produktami jako flex z zawijaniem */
+#products,
+#shop-grid,
+#products-grid,
+#jm-products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+/* Karta produktu – stała, max szerokość */
+.jm-card.jm-card--product {
+  flex: 0 0 320px;      /* docelowa szerokość karty */
+  max-width: 320px;
+}
+
+/* Na wąskich ekranach pozwalamy na pełną szerokość */
+@media (max-width: 700px) {
+  .jm-card.jm-card--product {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+

@@ -1,6 +1,15 @@
 // shop-sheet.js
 // Lista produktów + drzewko: kategoria -> podkategorie z filtrowaniem
 
+// Mapowanie technicznych nazw podkategorii na ładne etykiety
+const SUBCATEGORY_LABELS = {
+  "coats_jackets": "Marynarki i kurtki",
+  "upcycled": "Upcykling",
+  // dopisuj kolejne:
+  // "jeans": "Jeansy",
+  // "dresses": "Sukienki",
+};
+
 document.addEventListener("DOMContentLoaded", async () => {
   const grid =
     document.getElementById("products") ||
@@ -136,12 +145,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       subList.className = "jm-filter-sublist jm-filter-sublist--collapsed";
 
       subcategories.forEach((subName) => {
-        const subBtn = document.createElement("button");
-        subBtn.type = "button";
-        subBtn.className = "jm-filter-pill jm-filter-pill--sub";
-        subBtn.textContent = subName;
-        subBtn.dataset.filterType = "subcategory";
-        subBtn.dataset.key = subName.toLowerCase();
+  const key = subName.toLowerCase();
+  const label = SUBCATEGORY_LABELS[key] || subName;
+
+  const subBtn = document.createElement("button");
+  subBtn.type = "button";
+  subBtn.className = "jm-filter-pill jm-filter-pill--sub";
+  subBtn.textContent = label;          // ładna nazwa
+  subBtn.dataset.filterType = "subcategory";
+  subBtn.dataset.key = key;            // filtr nadal po slugu
+
 
         subBtn.addEventListener("click", () => {
           setActiveFilter(subBtn);
