@@ -541,4 +541,19 @@ img{max-width:100%;display:block}
     flex: 1 1 100%;
     max-width: 100%;
   }
+.jm-lang-switch {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  cursor: pointer;
+}
+
+.jm-lang-switch span {
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.jm-lang-switch .active {
+  font-weight: 700;
+  text-decoration: underline;
+}
 
