@@ -399,15 +399,19 @@ img{max-width:100%;display:block}
   gap: 2.5rem;
 }
 
-.jm-shop-main {
-  flex: 1 1 auto;
-}
-
+/* Sidebar MA BYĆ z lewej, więc dajemy mu order: 1 */
 .jm-shop-sidebar {
   flex: 0 0 220px;
   font-size: 0.9rem;
-  border-left: 1px solid rgba(247,245,242,0.18);
-  padding-left: 1.5rem;
+  border-right: 1px solid rgba(247,245,242,0.18);
+  padding-right: 1.5rem;
+  order: 1;
+}
+
+/* Lista produktów po prawej */
+.jm-shop-main {
+  flex: 1 1 auto;
+  order: 2;
 }
 
 .jm-shop-sidebar h3 {
