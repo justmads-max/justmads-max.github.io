@@ -1,19 +1,16 @@
 // lang.js
-// Prosty system tłumaczeń PL / EN dla statycznych tekstów na stronach
-// index.html, shop.html, product.html
-
 (function () {
   const DEFAULT_LANG = "pl";
 
   const TRANSLATIONS = {
     pl: {
-      // NAV / HEADER
+      // NAV / OGÓLNE
       logo_sub: "vintage & upcycling",
       nav_home: "Strona główna",
       nav_shop: "Sklep",
       nav_about: "O marce",
 
-      // INDEX / HOME
+      // INDEX
       hero_title: "Vintage, który ma już historię.<br>Ty dopisujesz resztę.",
       hero_sub:
         "Wyselekcjonowane second hand, upcycling i unikatowe perełki — wszystko ręcznie wybierane, zero fast fashion.",
@@ -21,7 +18,7 @@
       about_text:
         "JustMads to butikowy projekt vintage & upcycling — tworzony z sercem i pełną selekcją każdego produktu.",
 
-      // SHOP PAGE
+      // SHOP
       shop_title: "Sklep – JustMads",
       shop_header: "Sklep",
       shop_subheader:
@@ -32,19 +29,19 @@
       cat_coats: "płaszcze & marynarki",
       cat_upcycled: "upcycled",
 
-      // PRODUCT PAGE
+      // PRODUCT
       product_title: "Produkt – JustMads",
       product_back: "← Powrót do sklepu"
     },
 
     en: {
-      // NAV / HEADER
+      // NAV / GENERAL
       logo_sub: "vintage & upcycling",
       nav_home: "Home",
       nav_shop: "Shop",
       nav_about: "About",
 
-      // INDEX / HOME
+      // INDEX
       hero_title: "Vintage that already has a story.<br>You write the rest.",
       hero_sub:
         "Curated second hand pieces, upcycling and unique gems — all hand-picked, zero fast fashion.",
@@ -52,7 +49,7 @@
       about_text:
         "JustMads is a small vintage & upcycling project — created with heart and careful selection of every single item.",
 
-      // SHOP PAGE
+      // SHOP
       shop_title: "Shop – JustMads",
       shop_header: "Shop",
       shop_subheader:
@@ -63,74 +60,62 @@
       cat_coats: "Coats & blazers",
       cat_upcycled: "Upcycled",
 
-      // PRODUCT PAGE
+      // PRODUCT
       product_title: "Product – JustMads",
       product_back: "← Back to shop"
     }
   };
 
-  function applyLanguage(lang) {
+  function setLang(lang) {
     const dict = TRANSLATIONS[lang] || TRANSLATIONS[DEFAULT_LANG];
+    window.JM_LANG = lang;
 
-    // <html lang="...">
-    document.documentElement.lang = lang;
-
-    // elementy z data-lang="klucz"
-    document.querySelectorAll("[data-lang]").forEach((el) => {
+    // elementy z data-lang (teksty)
+    document.querySelectorAll("[data-lang]").forEach(function (el) {
       const key = el.getAttribute("data-lang");
       const value = dict[key];
-      if (value !== undefined) {
-        // używamy innerHTML, żeby działały <br> w hero_title itd.
-        el.innerHTML = value;
+      if (!value) return;
+
+      if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+        el.placeholder = value;
+      } else if (el.tagName === "TITLE") {
+        el.textContent = value;
+      } else {
+        el.innerHTML = value; // pozwala na <br> w hero_title
       }
     });
 
     // aktywny przycisk języka
-    document.querySelectorAll("[data-lang-button]").forEach((btn) => {
-      const btnLang = btn.getAttribute("data-lang-button");
-      if (btnLang === lang) {
+    document.querySelectorAll("[data-lang-button]").forEach(function (btn) {
+      const bLang = btn.getAttribute("data-lang-button");
+      if (bLang === lang) {
         btn.classList.add("jm-lang-active");
       } else {
         btn.classList.remove("jm-lang-active");
       }
     });
-
-    // tytuł strony (jeśli jest osobny klucz)
-    const titleEl = document.querySelector("title[data-lang]");
-    if (titleEl) {
-      const key = titleEl.getAttribute("data-lang");
-      if (dict[key]) {
-        titleEl.innerHTML = dict[key];
-      }
-    }
-
-    // zapis + globalna zmienna dla innych skryptów (np. shop/product)
-    window.JM_LANG = lang;
-    try {
-      localStorage.setItem("jm_lang", lang);
-    } catch (e) {
-      // cicho, jeśli np. tryb prywatny
-    }
   }
 
   function initLang() {
-    let lang = DEFAULT_LANG;
+    let stored = null;
     try {
-      const stored = localStorage.getItem("jm_lang");
-      if (stored && TRANSLATIONS[stored]) {
-        lang = stored;
-      }
-    } catch (e) {}
+      stored = window.localStorage && localStorage.getItem("jm_lang");
+    } catch (e) {
+      stored = null;
+    }
+    const lang = stored || DEFAULT_LANG;
+    setLang(lang);
 
-    // kliknięcia w PL / EN
-    document.querySelectorAll("[data-lang-button]").forEach((btn) => {
-      btn.addEventListener("click", () => {
+    document.querySelectorAll("[data-lang-button]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
         const newLang = btn.getAttribute("data-lang-button");
-        applyLanguage(newLang);
+        if (!newLang || !TRANSLATIONS[newLang]) return;
+        try {
+          window.localStorage && localStorage.setItem("jm_lang", newLang);
+        } catch (e) {}
+        setLang(newLang);
       });
     });
-
-    applyLanguage(lang);
   }
 
   if (document.readyState === "loading") {
