@@ -312,3 +312,17 @@ img{max-width:100%;display:block}
   color: #aaaaaa;
 }
 
+.jm-card-image--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: #ccc;
+}
+
+.jm-product-size-label {
+  font-size: 0.85rem;
+  color: #aaa;
+  margin-left: 4px;
+}
+
