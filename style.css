@@ -129,11 +129,23 @@ img{max-width:100%;display:block}
 
 /* PRODUCT PAGE LAYOUT */
 
-.jm-product-layout{
-  display:flex;
-  flex-wrap:wrap;
-  gap:2rem;
-  align-items:flex-start;
+.jm-product-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  flex-wrap: nowrap; /* ważne – nie zawijamy w dół na desktopie */
+}
+/* Pierwsze dziecko w .jm-product-layout – kolumna ze zdjęciem */
+.jm-product-layout > *:first-child {
+  flex: 0 0 420px;   /* stała szerokość kolumny ze zdjęciem */
+  max-width: 100%;
+}
+
+/* Drugie dziecko – kolumna z opisem */
+.jm-product-layout > *:last-child {
+  flex: 1 1 auto;    /* reszta szerokości na opis */
+}
+
 }
 .jm-product-gallery{
   flex:1 1 260px;
@@ -202,8 +214,18 @@ img{max-width:100%;display:block}
 @media (max-width:720px){
   .jm-nav{flex-wrap:wrap}
   .jm-nav-center{flex-wrap:wrap;justify-content:flex-start}
-  .jm-product-layout{flex-direction:column}
-  .jm-product-gallery{max-width:100%}
+
+  .jm-product-layout{
+    flex-direction:column;
+    flex-wrap:wrap;
+  }
+
+  .jm-product-layout > *:first-child,
+  .jm-product-layout > *:last-child {
+    flex: 1 1 auto;
+    max-width: 100%;
+  }
+
 }
 .jm-product-info {
   padding: 8px 0;
