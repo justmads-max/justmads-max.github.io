@@ -3,55 +3,73 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sklep – JustMads</title>
+  <title data-lang="shop_title">Sklep – JustMads</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+  <!-- HEADER -->
   <header class="jm-header">
     <nav class="jm-nav">
+
       <div class="jm-logo">
-        <span class="jm-logo-main">JustMads</span>
-        <span class="jm-logo-sub">vintage & upcycling</span>
+        <span class="jm-logo-main">JUSTMADS</span>
+        <span class="jm-logo-sub" data-lang="logo_sub">vintage & upcycling</span>
       </div>
+
       <div class="jm-nav-center">
-        <a href="index.html" class="jm-nav-link">Strona główna</a>
-        <a href="shop.html" class="jm-nav-link">Sklep</a>
-        <a href="index.html#about" class="jm-nav-link">O marce</a>
+        <a href="index.html" class="jm-nav-link" data-lang="nav_home">Strona główna</a>
+        <a href="shop.html" class="jm-nav-link" data-lang="nav_shop">Sklep</a>
+        <a href="index.html#about" class="jm-nav-link" data-lang="nav_about">O marce</a>
       </div>
-<div class="jm-lang-switch">
-  <span data-lang="pl" class="active">PL</span> |
-  <span data-lang="en">EN</span>
-</div>
+
+      <!-- LANGUAGE SWITCH -->
+      <div class="jm-lang-switch">
+        <span class="jm-lang" data-lang-button="pl">PL</span> |
+        <span class="jm-lang" data-lang-button="en">EN</span>
+      </div>
 
     </nav>
   </header>
 
+  <!-- MAIN -->
   <main class="jm-section">
-    <div class="jm-section-inner jm-shop-layout">
-      <!-- LEWA STRONA – produkty -->
-      <div class="jm-shop-main">
-        <h3 data-i18n="categories">Kategorie</h3>
 
-<button data-i18n="all_products">Wszystko</button>
-<button data-i18n="cat_clothes">Ubrania</button>
-<button data-i18n="cat_coats_jackets">Marynarki i kurtki</button>
-<button data-i18n="cat_upcycled">Upcykling</button>
+    <div class="shop-layout">
 
+      <!-- CATEGORIES LEFT PANEL -->
+      <aside class="jm-categories">
+        <h3 data-lang="categories_title">Kategorie</h3>
 
+        <button class="cat-btn" data-category="all" data-lang="cat_all">Wszystko</button>
 
-        <div id="products"></div>
-      </div>
+        <div class="cat-group">
+          <button class="cat-btn cat-parent">
+            <span data-lang="cat_clothes">Ubrania</span>
+            <span class="arrow">›</span>
+          </button>
 
-      <!-- PRAWA STRONA – kategorie -->
-      <aside class="jm-shop-sidebar">
-        <h3>Kategorie</h3>
-        <div id="shop-categories" class="jm-filter-list">
-          <!-- przyciski kategorii wstawi JS -->
+          <div class="cat-sub">
+            <button class="cat-btn sub" data-category="coats_jackets" data-lang="cat_coats">płaszcze & marynarki</button>
+            <button class="cat-btn sub" data-category="upcycled" data-lang="cat_upcycled">upcycled</button>
+          </div>
         </div>
       </aside>
+
+      <!-- PRODUCTS SECTION -->
+      <section class="shop-content">
+        <h2 data-lang="shop_header">Sklep</h2>
+        <p data-lang="shop_subheader">
+          Na razie w sklepie jest tylko kilka pierwszych sztuk – kolejne perełki będą wpadały stopniowo.
+        </p>
+
+        <div id="products"></div>
+      </section>
+
     </div>
   </main>
 
+  <!-- FOOTER -->
   <footer class="jm-footer">
     <p>© <span id="year"></span> JustMads</p>
   </footer>
@@ -59,9 +77,14 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
+
+  <!-- LANGUAGE SYSTEM -->
+  <script src="lang.js"></script>
+
+  <!-- DATA + SHOP RENDER -->
   <script src="sheet-config.js"></script>
   <script src="sheet-data.js"></script>
   <script src="shop-sheet.js"></script>
+
 </body>
 </html>
-<script src="lang.js"></script>

@@ -1,70 +1,90 @@
-// --- 1. LANGUAGE STATE ---
-let JM_LANG = localStorage.getItem("jm_lang") || "pl";
+// === LANGUAGE DATA ===
+// Każdy element z atrybutem data-lang="klucz" zostanie przetłumaczony.
 
-// --- 2. TEXT DICTIONARY ---
-const JM_TEXT = {
+const JM_LANG = {
   pl: {
-    shop_title: "Sklep",
-    shop_sub: "Na razie w sklepie jest tylko kilka pierwszych sztuk – kolejne perełki będą wpadały stopniowo.",
-    categories: "Kategorie",
-    all_products: "Wszystko",
+    // NAV
+    logo_sub: "vintage & upcycling",
+    nav_home: "Strona główna",
+    nav_shop: "Sklep",
+    nav_about: "O marce",
+
+    // SHOP PAGE
+    shop_title: "Sklep – JustMads",
+    shop_header: "Sklep",
+    shop_subheader: "Na razie w sklepie jest tylko kilka pierwszych sztuk – kolejne perełki będą wpadały stopniowo.",
 
     // CATEGORIES
+    categories_title: "Kategorie",
+    cat_all: "Wszystko",
     cat_clothes: "Ubrania",
-    cat_upcycled: "Upcykling",
-    cat_coats_jackets: "Marynarki i kurtki",
-    cat_denim: "Jeansy",
+    cat_coats: "płaszcze & marynarki",
+    cat_upcycled: "upcycled",
 
-    price_pln: "PLN",
+    // PRODUCT PAGE
+    product_title: "Produkt – JustMads",
+    product_price: "Cena",
+    product_size: "Rozmiar",
+    product_back: "← Powrót do sklepu"
   },
 
   en: {
-    shop_title: "Shop",
-    shop_sub: "Only a few first pieces are available for now — new gems will drop gradually.",
-    categories: "Categories",
-    all_products: "All products",
+    // NAV
+    logo_sub: "vintage & upcycling",
+    nav_home: "Home",
+    nav_shop: "Shop",
+    nav_about: "About",
+
+    // SHOP PAGE
+    shop_title: "Shop – JustMads",
+    shop_header: "Shop",
+    shop_subheader: "Only a few first pieces are available for now — more gems will appear gradually.",
 
     // CATEGORIES
+    categories_title: "Categories",
+    cat_all: "All products",
     cat_clothes: "Clothing",
+    cat_coats: "Coats & jackets",
     cat_upcycled: "Upcycled",
-    cat_coats_jackets: "Coats & jackets",
-    cat_denim: "Denim",
 
-    price_pln: "PLN",
+    // PRODUCT PAGE
+    product_title: "Product – JustMads",
+    product_price: "Price",
+    product_size: "Size",
+    product_back: "← Back to shop"
   }
 };
 
-// --- 3. UPDATE LANGUAGE SWITCH ---
-function updateLangSwitch() {
-  document.querySelectorAll(".jm-lang-switch span").forEach(el => {
-    el.classList.remove("active");
-    if (el.dataset.lang === JM_LANG) el.classList.add("active");
 
-    el.onclick = () => {
-      JM_LANG = el.dataset.lang;
-      localStorage.setItem("jm_lang", JM_LANG);
-      applyTranslations();
-    };
+// === LANGUAGE LOGIC ===
+
+function jmApplyLanguage(lang) {
+  document.documentElement.setAttribute("lang", lang);
+
+  // Każdy tag z data-lang="key"
+  document.querySelectorAll("[data-lang]").forEach(el => {
+    const key = el.getAttribute("data-lang");
+    if (JM_LANG[lang][key]) {
+      el.textContent = JM_LANG[lang][key];
+    }
+  });
+
+  // Zapisujemy wybór
+  localStorage.setItem("jm_lang", lang);
+}
+
+function jmInitLang() {
+  const saved = localStorage.getItem("jm_lang") || "pl";
+  jmApplyLanguage(saved);
+
+  // Przyciski PL | EN
+  document.querySelectorAll("[data-lang-button]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const lang = btn.getAttribute("data-lang-button");
+      jmApplyLanguage(lang);
+      location.reload(); // reload dla shop-sheet i product-sheet tekstów
+    });
   });
 }
 
-// --- 4. APPLY TRANSLATIONS ---
-function applyTranslations() {
-  const dict = JM_TEXT[JM_LANG];
-
-  // HEADER ELEMENTS
-  document.querySelectorAll("[data-i18n]").forEach(el => {
-    let key = el.dataset.i18n;
-    if (dict[key]) el.textContent = dict[key];
-  });
-
-  // PRICE LABELS
-  document.querySelectorAll(".jm-product-price-currency").forEach(el => {
-    el.textContent = dict.price_pln;
-  });
-
-  updateLangSwitch();
-}
-
-// --- INIT ---
-document.addEventListener("DOMContentLoaded", applyTranslations);
+document.addEventListener("DOMContentLoaded", jmInitLang);
