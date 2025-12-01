@@ -390,3 +390,71 @@ img{max-width:100%;display:block}
   border-radius: 10px;
   font-size: 0.85rem;
 }
+
+/* === LAYOUT SKLEPU: lista produktów + sidebar z kategoriami === */
+
+.jm-shop-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 2.5rem;
+}
+
+.jm-shop-main {
+  flex: 1 1 auto;
+}
+
+.jm-shop-sidebar {
+  flex: 0 0 220px;
+  font-size: 0.9rem;
+  border-left: 1px solid rgba(247,245,242,0.18);
+  padding-left: 1.5rem;
+}
+
+.jm-shop-sidebar h3 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  font-size: 1rem;
+}
+
+/* Lista filtrów */
+.jm-filter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.jm-filter-pill {
+  border-radius: 999px;
+  border: 1px solid rgba(247,245,242,0.3);
+  background: transparent;
+  color: #f7f5f2;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.jm-filter-pill:hover {
+  background: rgba(247,245,242,0.08);
+}
+
+.jm-filter-pill--active {
+  background: #f7f5f2;
+  color: #050608;
+  border-color: #f7f5f2;
+}
+
+/* Mobile – sidebar pod spodem / nad produktami */
+@media (max-width: 900px) {
+  .jm-shop-layout {
+    flex-direction: column-reverse;
+  }
+
+  .jm-shop-sidebar {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid rgba(247,245,242,0.18);
+    padding-top: 1rem;
+    width: 100%;
+  }
+}
