@@ -1,6 +1,28 @@
 // shop-sheet.js
 // Render sklepu + filtrowanie kategorii
 
+// Pomocniczo: budowanie pełnego URL do obrazka
+function jmBuildImageUrl(raw) {
+  if (!raw) return "";
+  const trimmed = String(raw).trim();
+  if (!trimmed) return "";
+
+  // Jeśli już pełny URL (http / https) – zostaw
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // Jeśli mamy bazę obrazków z sheet-config.js – doklej
+  const base =
+    typeof JM_IMAGE_BASE !== "undefined" && JM_IMAGE_BASE
+      ? JM_IMAGE_BASE.replace(/\/+$/, "")
+      : "";
+
+  if (!base) return trimmed;
+
+  return base + "/" + trimmed.replace(/^\/+/, "");
+}
+
 async function jmInitShop() {
   const grid = document.getElementById("products");
   if (!grid || typeof loadJMProducts !== "function") return;
@@ -24,12 +46,15 @@ async function jmInitShop() {
     const category = (p.category || "").toLowerCase();
     const subcategory = (p.subcategory || "").toLowerCase();
 
-    // rodzic "Ubrania"
+    // Rodzic "Ubrania / Clothing"
     if (catLower === "clothing") {
-      return category === "ubrania" || category === "clothing";
+      return (
+        category === "ubrania" ||
+        category === "clothing"
+      );
     }
 
-    // pozostałe – po category lub subcategory
+    // Konkretny typ
     return category === catLower || subcategory === catLower;
   }
 
@@ -52,12 +77,13 @@ async function jmInitShop() {
       card.href = `product.html?id=${encodeURIComponent(p.id)}`;
       card.className = "jm-product-card";
 
-      const imgSrc = p.image_1 || p.image1 || "";
+      const imgSrc = jmBuildImageUrl(
+        p.image_1 || p.image1 || p.image || ""
+      );
 
-      const name =
-        p.name_pl || p.name_en || "Produkt";
-
+      const name = p.name_pl || p.name_en || "Produkt";
       const priceTxt = p.price_pln ? `${p.price_pln} PLN` : "";
+      const sizeTxt = p.size ? String(p.size) : "";
 
       card.innerHTML = `
         <div class="jm-product-image-wrap">
@@ -72,8 +98,8 @@ async function jmInitShop() {
           <div class="jm-product-meta">
             <span class="jm-product-price">${priceTxt}</span>
             ${
-              p.size
-                ? `<span class="jm-product-size">${p.size}</span>`
+              sizeTxt
+                ? `<span class="jm-product-size">${sizeTxt}</span>`
                 : ""
             }
           </div>
@@ -102,7 +128,7 @@ async function jmInitShop() {
     });
   });
 
-  // domyślnie zaznaczamy "Wszystko", jeśli jest
+  // Domyślnie "Wszystko"
   const defaultBtn = catButtons.find(
     (b) => b.getAttribute("data-category") === "all"
   );
@@ -114,5 +140,5 @@ async function jmInitShop() {
   render();
 }
 
-// start po załadowaniu DOM
+// Start po załadowaniu DOM
 document.addEventListener("DOMContentLoaded", jmInitShop);

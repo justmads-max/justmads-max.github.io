@@ -290,26 +290,26 @@ img {
 
 /* Obrazek w karcie – mniejszy, bez ucinania */
 
+/* Obrazek w karcie – mniejszy, bez ucinania */
 .jm-product-image-wrap {
   background: #000000;
   border-radius: 18px;
   overflow: hidden;
   margin-bottom: 8px;
 
-  /* NOWE: stała, mniejsza wysokość + centrowanie */
-  height: 260px;
+  height: 220px;           /* mniejsza wysokość kart */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .jm-product-image-wrap img {
-  /* NOWE: nie przycinaj ubrania */
   max-width: 100%;
   max-height: 100%;
   width: auto;
   height: auto;
   object-fit: contain;
+  display: block;
 }
 
 /* Teksty w karcie */
@@ -472,6 +472,35 @@ img {
     flex-direction: column;
   }
 
+  .jm-product-gallery {
+    max-width: 100%;
+  }
+}
+
+/* --- PRODUCT PAGE LAYOUT (fix) --- */
+
+.jm-product-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.jm-product-gallery {
+  flex: 1 1 260px;
+  max-width: 480px;
+}
+
+.jm-product-info {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+/* Mobile – pod sobą */
+@media (max-width: 720px) {
+  .jm-product-layout {
+    flex-direction: column;
+  }
   .jm-product-gallery {
     max-width: 100%;
   }
