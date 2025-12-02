@@ -31,6 +31,82 @@
     return p.price_pln || "";
   }
 
+  // Budujemy sekcję z wymiarami (ul/li) na podstawie pól z arkusza
+  function buildMeasurementsSection(p) {
+    const lang = getLang();
+
+    const rows = [];
+
+    if (p.length_total) {
+      rows.push({
+        label: lang === "en" ? "Total length" : "Długość całkowita",
+        value: p.length_total,
+      });
+    }
+    if (p.width_p2p) {
+      rows.push({
+        label: lang === "en" ? "Pit to pit width" : "Szerokość od pachy do pachy",
+        value: p.width_p2p,
+      });
+    }
+    if (p.width_waist) {
+      rows.push({
+        label: lang === "en" ? "Waist width" : "Szerokość w pasie",
+        value: p.width_waist,
+      });
+    }
+    if (p.width_hips) {
+      rows.push({
+        label: lang === "en" ? "Hips width" : "Szerokość w biodrach",
+        value: p.width_hips,
+      });
+    }
+    if (p.shoulder_width) {
+      rows.push({
+        label: lang === "en" ? "Shoulder width" : "Szerokość ramion",
+        value: p.shoulder_width,
+      });
+    }
+    if (p.sleeve_pit) {
+      rows.push({
+        label: lang === "en" ? "Sleeve length (pit to cuff)" : "Długość rękawa od pachy",
+        value: p.sleeve_pit,
+      });
+    }
+    if (p.length_bottom) {
+      rows.push({
+        label: lang === "en" ? "Bottom length" : "Długość do dołu",
+        value: p.length_bottom,
+      });
+    }
+    if (p.inseam) {
+      rows.push({
+        label: lang === "en" ? "Inseam" : "Długość nogawki od kroku",
+        value: p.inseam,
+      });
+    }
+
+    if (!rows.length) return null;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "jm-product-measurements";
+
+    const heading = document.createElement("h2");
+    heading.textContent = lang === "en" ? "Measurements" : "Wymiary";
+    wrapper.appendChild(heading);
+
+    const list = document.createElement("ul");
+
+    rows.forEach((row) => {
+      const li = document.createElement("li");
+      li.textContent = row.label + ": " + row.value;
+      list.appendChild(li);
+    });
+
+    wrapper.appendChild(list);
+    return wrapper;
+  }
+
   function renderProduct(p) {
     window.__JM_CURRENT_PRODUCT = p; // żeby można było przeładować przy zmianie języka
 
@@ -71,9 +147,7 @@
           mainImg.src = src;
           document
             .querySelectorAll(".jm-product-thumb")
-            .forEach((el) =>
-              el.classList.remove("jm-product-thumb-active")
-            );
+            .forEach((el) => el.classList.remove("jm-product-thumb-active"));
           t.classList.add("jm-product-thumb-active");
         });
 
@@ -94,14 +168,31 @@
     const priceEl = document.createElement("p");
     priceEl.className = "jm-product-price-main";
     const price = getPricePLN(p);
-    if (price) priceEl.textContent = `${price} PLN`;
+    if (price) priceEl.textContent = price + " PLN";
     info.appendChild(priceEl);
+
+    const lang = getLang();
 
     const meta = document.createElement("p");
     meta.className = "jm-product-meta-main";
     const metaParts = [];
-    if (p.size) metaParts.push(`Rozmiar: ${p.size}`);
-    if (p.brand) metaParts.push(`Marka: ${p.brand}`);
+
+    if (p.size) {
+      metaParts.push(
+        (lang === "en" ? "Size" : "Rozmiar") + ": " + p.size
+      );
+    }
+    if (p.brand) {
+      metaParts.push(
+        (lang === "en" ? "Brand" : "Marka") + ": " + p.brand
+      );
+    }
+    if (p.materials) {
+      metaParts.push(
+        (lang === "en" ? "Material" : "Materiał") + ": " + p.materials
+      );
+    }
+
     meta.textContent = metaParts.join(" | ");
     if (metaParts.length) info.appendChild(meta);
 
@@ -109,7 +200,11 @@
     desc.textContent = getDesc(p);
     info.appendChild(desc);
 
-    // tu możesz dodać wymiary itd. gdy będziemy mieć gotowy schemat
+    // Sekcja z wymiarami (jeśli są jakieś dane)
+    const measurementsEl = buildMeasurementsSection(p);
+    if (measurementsEl) {
+      info.appendChild(measurementsEl);
+    }
 
     layout.appendChild(gallery);
     layout.appendChild(info);
@@ -138,7 +233,7 @@
     }
 
     const product = allProducts.find(
-      (p) => String(p.id) === String(productId)
+      (prod) => String(prod.id) === String(productId)
     );
 
     if (!product) {
