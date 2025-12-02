@@ -34,9 +34,11 @@
 
   <!-- MAIN -->
   <main class="jm-section">
+
+    <!-- 🔹 WRACAMY DO STARYCH KLAS: shop-layout + jm-categories + shop-content -->
     <div class="shop-layout">
 
-      <!-- CATEGORIES LEFT PANEL -->
+      <!-- SIDEBAR PO LEWEJ -->
       <aside class="jm-categories">
         <h3 data-lang="categories_title">Kategorie</h3>
 
@@ -59,9 +61,9 @@
         </div>
       </aside>
 
-      <!-- PRODUCTS SECTION -->
+      <!-- LISTA PRODUKTÓW PO PRAWEJ -->
       <section class="shop-content">
-        <h2 data-lang="shop_header">Sklep</h2>
+        <h1 data-lang="shop_header">Sklep</h1>
         <p data-lang="shop_subheader">
           Na razie w sklepie jest tylko kilka pierwszych sztuk – kolejne perełki będą wpadały stopniowo.
         </p>
@@ -81,13 +83,13 @@
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 
-  <!-- LANGUAGE SYSTEM -->
-  <script src="lang.js"></script>
-
   <!-- DATA + SHOP RENDER -->
   <script src="sheet-config.js"></script>
   <script src="sheet-data.js"></script>
   <script src="shop-sheet.js"></script>
+
+  <!-- LANGUAGE SYSTEM NA KOŃCU, TYLKO DO TEKSTÓW -->
+  <script src="lang.js"></script>
 
 </body>
 </html>
