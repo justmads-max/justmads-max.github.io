@@ -23,7 +23,6 @@
         <a href="index.html#about" class="jm-nav-link" data-lang="nav_about">O marce</a>
       </div>
 
-      <!-- LANGUAGE SWITCH -->
       <div class="jm-lang-switch">
         <span class="jm-lang" data-lang-button="pl">PL</span> |
         <span class="jm-lang" data-lang-button="en">EN</span>
@@ -35,10 +34,9 @@
   <!-- MAIN -->
   <main class="jm-section">
 
-    <!-- 🔹 WRACAMY DO STARYCH KLAS: shop-layout + jm-categories + shop-content -->
     <div class="shop-layout">
 
-      <!-- SIDEBAR PO LEWEJ -->
+      <!-- LEWY PANEL: KATEGORIE -->
       <aside class="jm-categories">
         <h3 data-lang="categories_title">Kategorie</h3>
 
@@ -52,7 +50,7 @@
 
           <div class="cat-sub">
             <button class="cat-btn sub" data-category="coats_jackets" data-lang="cat_coats">
-              płaszcze & marynarki
+              płaszcze &amp; marynarki
             </button>
             <button class="cat-btn sub" data-category="upcycled" data-lang="cat_upcycled">
               upcycled
@@ -61,9 +59,9 @@
         </div>
       </aside>
 
-      <!-- LISTA PRODUKTÓW PO PRAWEJ -->
+      <!-- PRAWA CZĘŚĆ: LISTA PRODUKTÓW -->
       <section class="shop-content">
-        <h1 data-lang="shop_header">Sklep</h1>
+        <h2 data-lang="shop_header">Sklep</h2>
         <p data-lang="shop_subheader">
           Na razie w sklepie jest tylko kilka pierwszych sztuk – kolejne perełki będą wpadały stopniowo.
         </p>
@@ -83,12 +81,10 @@
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 
-  <!-- DATA + SHOP RENDER -->
+  <!-- BARDZO WAŻNA KOLEJNOŚĆ: najpierw dane, potem logika sklepu, na końcu tłumaczenia -->
   <script src="sheet-config.js"></script>
   <script src="sheet-data.js"></script>
   <script src="shop-sheet.js"></script>
-
-  <!-- LANGUAGE SYSTEM NA KOŃCU, TYLKO DO TEKSTÓW -->
   <script src="lang.js"></script>
 
 </body>

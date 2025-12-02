@@ -1,43 +1,51 @@
 // product-sheet.js
-// Też zakładamy globalne JM_PRODUCTS z sheet-data.js
+// Czyta JM_PRODUCTS i wyświetla pojedynczy produkt
 
 (function () {
-  const container = document.getElementById("product");
-  if (!container) return;
+  document.addEventListener("DOMContentLoaded", function () {
+    const container = document.getElementById("product");
+    if (!container) return;
 
-  if (typeof JM_PRODUCTS === "undefined" || !Array.isArray(JM_PRODUCTS)) {
-    console.error("JM_PRODUCTS nie jest dostępne – sprawdź sheet-data.js");
-    container.textContent = "Błąd ładowania danych produktu.";
-    return;
-  }
+    let raw = typeof JM_PRODUCTS !== "undefined" ? JM_PRODUCTS : null;
 
-  function currentLang() {
-    try {
-      const v = window.localStorage.getItem("jm_lang");
-      return v === "en" ? "en" : "pl";
-    } catch (e) {
-      return "pl";
+    if (!raw) {
+      console.error("JM_PRODUCTS jest undefined – sprawdź sheet-data.js");
+      container.textContent = "Błąd ładowania danych produktu.";
+      return;
     }
-  }
 
-  function getAllImages(p) {
-    const out = [];
-    for (const key in p) {
-      if (!Object.prototype.hasOwnProperty.call(p, key)) continue;
-      if (/^img/i.test(key) && p[key] && String(p[key]).trim()) {
-        out.push(String(p[key]).trim());
+    if (!Array.isArray(raw)) {
+      if (Array.isArray(raw.rows)) raw = raw.rows;
+      else if (Array.isArray(raw.data)) raw = raw.data;
+    }
+
+    if (!Array.isArray(raw) || !raw.length) {
+      container.textContent = "Brak danych produktu.";
+      return;
+    }
+
+    const PRODUCTS = raw.map((p) => (p.fields ? p.fields : p));
+
+    function currentLang() {
+      try {
+        const v = window.localStorage.getItem("jm_lang");
+        return v === "en" ? "en" : "pl";
+      } catch (e) {
+        return "pl";
       }
     }
-    return out;
-  }
 
-  function findProductById(id) {
-    return (
-      JM_PRODUCTS.find((p) => String(p.id) === String(id)) || null
-    );
-  }
+    function getAllImages(p) {
+      const out = [];
+      for (const key in p) {
+        if (!Object.prototype.hasOwnProperty.call(p, key)) continue;
+        if (/^img/i.test(key) && p[key] && String(p[key]).trim()) {
+          out.push(String(p[key]).trim());
+        }
+      }
+      return out;
+    }
 
-  function renderProduct() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
 
@@ -46,7 +54,9 @@
       return;
     }
 
-    const product = findProductById(id);
+    const product =
+      PRODUCTS.find((p) => String(p.id) === String(id)) || null;
+
     if (!product) {
       container.textContent = "Produkt nie znaleziony.";
       return;
@@ -72,23 +82,18 @@
     const images = getAllImages(product);
     const mainImg = images.length ? images[0] : "";
 
-    // UWAGA: kontener MA już klasę jm-product-layout (w product.html)
-    // więc wypełniamy go dwoma kolumnami: galeria + info
+    // WAŻNE: w product.html DIV ma już klasę jm-product-layout
     container.innerHTML = `
       <div class="jm-product-gallery">
         <div class="jm-product-main">
-          ${
-            mainImg
-              ? `<img src="${mainImg}" alt="${name}">`
-              : ""
-          }
+          ${mainImg ? `<img src="${mainImg}" alt="${name}">` : ""}
         </div>
         ${
           images.length > 1
             ? `<div class="jm-product-thumbs">
-                ${images
-                  .map(
-                    (src, idx) => `
+                 ${images
+                   .map(
+                     (src, idx) => `
                       <img
                         src="${src}"
                         class="jm-product-thumb ${
@@ -97,9 +102,9 @@
                         data-index="${idx}"
                         alt="${name} miniatura ${idx + 1}"
                       >
-                    `
-                  )
-                  .join("")}
+                     `
+                   )
+                   .join("")}
                </div>`
             : ""
         }
@@ -127,21 +132,15 @@
       </div>
     `;
 
-    // miniatury -> zmiana zdjęcia głównego
     const mainImgEl = container.querySelector(".jm-product-main img");
     const thumbs = container.querySelectorAll(".jm-product-thumb");
     thumbs.forEach((thumb) => {
       thumb.addEventListener("click", () => {
         const src = thumb.getAttribute("src");
         if (src && mainImgEl) mainImgEl.src = src;
-        thumbs.forEach((t) =>
-          t.classList.remove("jm-product-thumb-active")
-        );
+        thumbs.forEach((t) => t.classList.remove("jm-product-thumb-active"));
         thumb.classList.add("jm-product-thumb-active");
       });
     });
-  }
-
-  // wszystko odpalamy od razu – dane z sheet-data.js są już wczytane
-  renderProduct();
+  });
 })();
