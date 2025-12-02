@@ -557,3 +557,37 @@ img{max-width:100%;display:block}
   text-decoration: underline;
 }
 
+/* === SHOP LAYOUT: sidebar po lewej, produkty po prawej === */
+
+.jm-shop-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* Panel kategorii (sidebar) */
+.jm-shop-sidebar {
+  align-self: flex-start;
+}
+
+/* Sekcja z produktami */
+.jm-shop-main {
+  min-width: 0;
+}
+
+/* Na mniejszych ekranach – układ pionowy (najpierw kategorie, pod nimi produkty) */
+@media (max-width: 768px) {
+  .jm-shop-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .jm-shop-sidebar {
+    order: 0;
+  }
+
+  .jm-shop-main {
+    order: 1;
+  }
+}
+
