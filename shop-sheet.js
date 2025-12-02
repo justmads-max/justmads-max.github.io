@@ -1,158 +1,63 @@
-// shop-sheet.js
-// Czyta globalne JM_PRODUCTS z sheet-data.js i rysuje karty + filtr
+// shop-sheet.js – WERSJA DEBUG
+// Zamiast sklepu wypisuje strukturę JM_PRODUCTS na stronie,
+// żebyśmy mogli ją podejrzeć na screenie.
 
 (function () {
   document.addEventListener("DOMContentLoaded", function () {
     const grid = document.getElementById("products");
     if (!grid) return;
 
-    // --- 1. Pobieramy dane z globalnej zmiennej ---
+    let info = [];
+    let sample = null;
 
-    let raw = typeof JM_PRODUCTS !== "undefined" ? JM_PRODUCTS : null;
+    try {
+      if (typeof JM_PRODUCTS === "undefined") {
+        info.push("JM_PRODUCTS: undefined");
+      } else {
+        const data = JM_PRODUCTS;
+        info.push("typeof JM_PRODUCTS: " + typeof data);
+        info.push("Array.isArray(JM_PRODUCTS): " + Array.isArray(data));
 
-    if (!raw) {
-      console.error("JM_PRODUCTS jest undefined – sprawdź sheet-data.js");
-      grid.innerHTML = "<p>Brak danych produktów (błąd konfiguracji).</p>";
-      return;
-    }
+        if (data && typeof data === "object") {
+          info.push("Główne klucze obiektu: " + Object.keys(data).join(", "));
+        }
 
-    // dopuszczamy kilka możliwych struktur, na wszelki wypadek
-    if (!Array.isArray(raw)) {
-      if (Array.isArray(raw.rows)) raw = raw.rows;
-      else if (Array.isArray(raw.data)) raw = raw.data;
-    }
-
-    if (!Array.isArray(raw) || !raw.length) {
-      console.warn("JM_PRODUCTS jest puste lub w nieoczekiwanym formacie:", raw);
-      grid.innerHTML = "<p>Brak produktów (arkusz pusty).</p>";
-      return;
-    }
-
-    // normalizacja: bierzemy tylko obiekty z id
-    const ALL_PRODUCTS = raw
-      .map((p) => p.fields ? p.fields : p) // gdyby w środku było {fields:{...}}
-      .filter((p) => p && p.id);
-
-    // --- 2. Helpery ---
-
-    function currentLang() {
-      try {
-        const v = window.localStorage.getItem("jm_lang");
-        return v === "en" ? "en" : "pl";
-      } catch (e) {
-        return "pl";
-      }
-    }
-
-    function getAllImages(p) {
-      const out = [];
-      for (const key in p) {
-        if (!Object.prototype.hasOwnProperty.call(p, key)) continue;
-        // dowolne kolumny zaczynające się od "img"
-        if (/^img/i.test(key) && p[key] && String(p[key]).trim()) {
-          out.push(String(p[key]).trim());
+        // Spróbuj wyciągnąć przykładowy element
+        if (Array.isArray(data) && data.length) {
+          sample = data[0];
+          info.push("Przykład: JM_PRODUCTS[0]");
+        } else if (data && Array.isArray(data.rows) && data.rows.length) {
+          sample = data.rows[0];
+          info.push("Przykład: JM_PRODUCTS.rows[0]");
+        } else if (data && Array.isArray(data.data) && data.data.length) {
+          sample = data.data[0];
+          info.push("Przykład: JM_PRODUCTS.data[0]");
+        } else {
+          info.push("Nie znaleziono oczywistej tablicy z produktami (ani .rows, ani .data).");
         }
       }
-      return out;
+    } catch (e) {
+      info.push("Błąd przy odczycie JM_PRODUCTS: " + String(e));
     }
 
-    function getMainImage(p) {
-      const imgs = getAllImages(p);
-      return imgs.length ? imgs[0] : "";
-    }
+    grid.innerHTML = `
+      <h3 style="margin-top:1.5rem;">🔧 Debug – struktura danych z arkusza</h3>
+      <p>Proszę, zrób screen tego bloku i wyślij mi go 🙂</p>
+      <pre style="
+        white-space: pre-wrap;
+        font-size: 12px;
+        background: #111;
+        padding: 1rem;
+        border-radius: 10px;
+        border: 1px solid rgba(247,245,242,0.2);
+        max-height: 480px;
+        overflow: auto;
+      ">
+${info.join("\n")}
 
-    // --- 3. Filtrowanie po kategoriach z lewej ---
-
-    function filterByCategory(cat) {
-      if (!cat || cat === "all") return ALL_PRODUCTS;
-
-      if (cat === "upcycled") {
-        return ALL_PRODUCTS.filter((p) => {
-          const sub = (p.subcategory || "").toLowerCase();
-          return sub.includes("upcycled") || sub.includes("upcykling");
-        });
-      }
-
-      if (cat === "coats_jackets") {
-        return ALL_PRODUCTS.filter((p) => {
-          const sub = (p.subcategory || "").toLowerCase();
-          return (
-            sub.includes("coat") ||
-            sub.includes("płaszcz") ||
-            sub.includes("plaszcz") ||
-            sub.includes("marynarka") ||
-            sub.includes("jacket")
-          );
-        });
-      }
-
-      return ALL_PRODUCTS;
-    }
-
-    // --- 4. Render kart ---
-
-    function renderProducts(cat) {
-      const lang = currentLang();
-      const products = filterByCategory(cat);
-
-      if (!products.length) {
-        grid.innerHTML = "<p>Brak produktów w tej kategorii.</p>";
-        return;
-      }
-
-      const html = products
-        .map((p) => {
-          const name =
-            lang === "en" && p.name_en
-              ? p.name_en
-              : p.name_pl || p.name_en || "";
-
-          const img = getMainImage(p);
-          const price = p.price_pln ? `${p.price_pln} PLN` : "";
-          const size = p.size || "";
-
-          return `
-            <a href="product.html?id=${p.id}" class="jm-product-card">
-              <div class="jm-product-image-wrap">
-                ${img ? `<img src="${img}" alt="${name}">` : ""}
-              </div>
-              <div class="jm-product-info">
-                <h3 class="jm-product-name">${name}</h3>
-                <div class="jm-product-meta">
-                  ${price ? `<span class="jm-product-price">${price}</span>` : ""}
-                  ${size ? `<span class="jm-product-size">${size}</span>` : ""}
-                </div>
-              </div>
-            </a>
-          `;
-        })
-        .join("");
-
-      grid.innerHTML = html;
-    }
-
-    // --- 5. Obsługa przycisków kategorii ---
-
-    const catButtons = document.querySelectorAll(".cat-btn");
-
-    catButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const cat = btn.getAttribute("data-category") || "all";
-        catButtons.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        renderProducts(cat);
-      });
-    });
-
-    // domyślnie "Wszystko"
-    const allBtn = document.querySelector('.cat-btn[data-category="all"]');
-    if (allBtn) {
-      catButtons.forEach((b) => b.classList.remove("active"));
-      allBtn.classList.add("active");
-    }
-
-    // --- 6. Pierwsze renderowanie ---
-
-    renderProducts("all");
+-------- JSON.stringify przykładowego elementu --------
+${sample ? JSON.stringify(sample, null, 2) : "sample: null (nic nie znaleziono)"}
+      </pre>
+    `;
   });
 })();
