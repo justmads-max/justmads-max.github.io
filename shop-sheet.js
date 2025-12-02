@@ -1,140 +1,134 @@
 // shop-sheet.js
-// Render sklepu + filtrowanie kategorii
 
-// Budowanie poprawnego URL do obrazka na podstawie wartości z arkusza
-function jmBuildImageUrl(raw) {
-  if (!raw) return "";
-  let trimmed = String(raw).trim();
-  if (!trimmed) return "";
-
-  // Pełny URL z arkusza (np. https://...)
-  if (/^https?:\/\//i.test(trimmed)) {
-    return trimmed;
-  }
-
-  // Jeśli w arkuszu jest już ścieżka typu /images/... albo images/...
-  if (/^\/?images\//i.test(trimmed)) {
-    // dopilnujemy tylko, żeby zaczynało się od "/"
-    return trimmed.startsWith("/") ? trimmed : "/" + trimmed;
-  }
-
-  // Dla krótkich nazw typu "product-001/front.png"
-  return "/images/" + trimmed.replace(/^\/+/, "");
-}
-
-async function jmInitShop() {
-  const grid = document.getElementById("products");
-  if (!grid || typeof loadJMProducts !== "function") return;
-
-  let products = [];
-
-  try {
-    products = await loadJMProducts();
-  } catch (e) {
-    console.error("Nie udało się wczytać produktów", e);
-    grid.textContent = "Błąd wczytywania produktów.";
+(function () {
+  if (!window.JM_PRODUCTS) {
+    console.warn("JM_PRODUCTS not found");
     return;
   }
 
-  let currentCategory = "all";
+  var grid = document.getElementById("products");
+  if (!grid) return;
 
-  function matchesCategory(p, cat) {
-    if (!cat || cat === "all") return true;
+  var categoryButtons = document.querySelectorAll(".cat-btn");
 
-    const catLower = String(cat).toLowerCase();
-    const category = (p.category || "").toLowerCase();
-    const subcategory = (p.subcategory || "").toLowerCase();
-
-    // Rodzic "Ubrania / Clothing"
-    if (catLower === "clothing") {
-      return category === "ubrania" || category === "clothing";
-    }
-
-    // Konkretny typ
-    return category === catLower || subcategory === catLower;
+  function jmNormalizeImagePath(path) {
+    if (!path) return "";
+    // usuń wiodące "/" żeby /images/... stało się images/...
+    return String(path).replace(/^\/+/, "");
   }
 
-  function render() {
-    const filtered = products.filter(
-      (p) => p && p.status !== "hidden" && matchesCategory(p, currentCategory)
-    );
-
-    grid.innerHTML = "";
-
-    if (!filtered.length) {
-      const empty = document.createElement("p");
-      empty.textContent = "Brak produktów w tej kategorii.";
-      grid.appendChild(empty);
-      return;
+  function jmGetMainImage(product) {
+    var keys = ["img1", "img2", "img3", "img4"];
+    for (var i = 0; i < keys.length; i++) {
+      var v = product[keys[i]];
+      if (v && String(v).trim()) {
+        return jmNormalizeImagePath(v);
+      }
     }
+    return "";
+  }
 
-    filtered.forEach((p) => {
-      const card = document.createElement("a");
-      card.href = `product.html?id=${encodeURIComponent(p.id)}`;
-      card.className = "jm-product-card";
+  function jmCurrentLang() {
+    try {
+      var stored = window.localStorage && window.localStorage.getItem("jm_lang");
+      return stored === "en" ? "en" : "pl";
+    } catch (e) {
+      return "pl";
+    }
+  }
 
-      const imgSrc = jmBuildImageUrl(
-        p.image_1 || p.image1 || p.image || ""
-      );
-
-      const name = p.name_pl || p.name_en || "Produkt";
-      const priceTxt = p.price_pln ? `${p.price_pln} PLN` : "";
-      const sizeTxt = p.size ? String(p.size) : "";
-
-      card.innerHTML = `
-        <div class="jm-product-image-wrap">
-          ${
-            imgSrc
-              ? `<img src="${imgSrc}" alt="${name.replace(/"/g, "&quot;")}">`
-              : ""
-          }
-        </div>
-        <div class="jm-product-info">
-          <h3 class="jm-product-name">${name}</h3>
-          <div class="jm-product-meta">
-            <span class="jm-product-price">${priceTxt}</span>
-            ${
-              sizeTxt
-                ? `<span class="jm-product-size">${sizeTxt}</span>`
-                : ""
-            }
-          </div>
-        </div>
-      `;
-
-      grid.appendChild(card);
+  function filterProducts(category) {
+    var items = JM_PRODUCTS.filter(function (p) {
+      return (p.status || "").toLowerCase() === "available";
     });
+
+    if (!category || category === "all") return items;
+
+    if (category === "upcycled") {
+      return items.filter(function (p) {
+        var sub = (p.subcategory || "").toLowerCase();
+        return sub.includes("upcycled");
+      });
+    }
+
+    if (category === "coats_jackets") {
+      return items.filter(function (p) {
+        var sub = (p.subcategory || "").toLowerCase();
+        return (
+          sub.includes("coat") ||
+          sub.includes("płaszcz") ||
+          sub.includes("marynarka") ||
+          sub.includes("jacket")
+        );
+      });
+    }
+
+    return items;
   }
 
-  // --- Obsługa przycisków kategorii ---
+  function renderProducts(category) {
+    var lang = jmCurrentLang();
+    var products = filterProducts(category);
 
-  const catButtons = Array.from(
-    document.querySelectorAll("[data-category]")
-  );
+    grid.innerHTML = products
+      .map(function (p) {
+        var name =
+          lang === "en" && p.name_en
+            ? p.name_en
+            : p.name_pl || p.name_en || "";
 
-  catButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const cat = btn.getAttribute("data-category") || "all";
-      currentCategory = cat;
+        var img = jmGetMainImage(p);
+        var price = p.price_pln ? p.price_pln + " PLN" : "";
+        var size = p.size || "";
 
-      catButtons.forEach((b) => b.classList.remove("active"));
+        return `
+          <a href="product.html?id=${p.id}" class="jm-product-card">
+            <div class="jm-product-image-wrap">
+              ${
+                img
+                  ? `<img src="${img}" alt="${name}">`
+                  : ""
+              }
+            </div>
+            <div class="jm-product-info">
+              <h3 class="jm-product-name">${name}</h3>
+              <div class="jm-product-meta">
+                ${
+                  price
+                    ? `<span class="jm-product-price">${price}</span>`
+                    : ""
+                }
+                ${
+                  size
+                    ? `<span class="jm-product-size">${size}</span>`
+                    : ""
+                }
+              </div>
+            </div>
+          </a>
+        `;
+      })
+      .join("");
+  }
+
+  // obsługa kliknięć w kategorie
+  categoryButtons.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var cat = btn.getAttribute("data-category") || "all";
+      categoryButtons.forEach(function (b) {
+        b.classList.remove("active");
+      });
       btn.classList.add("active");
-
-      render();
+      renderProducts(cat);
     });
   });
 
-  // Domyślnie „Wszystko”
-  const defaultBtn = catButtons.find(
-    (b) => b.getAttribute("data-category") === "all"
-  );
-  if (defaultBtn) {
-    defaultBtn.classList.add("active");
-    currentCategory = "all";
+  // domyślnie: Wszystko
+  var defaultCatBtn = document.querySelector('.cat-btn[data-category="all"]');
+  if (defaultCatBtn) {
+    defaultCatBtn.classList.add("active");
+    renderProducts("all");
+  } else {
+    renderProducts("all");
   }
-
-  render();
-}
-
-// Start po załadowaniu DOM
-document.addEventListener("DOMContentLoaded", jmInitShop);
+})();

@@ -1,134 +1,143 @@
 // product-sheet.js
-// Strona pojedynczego produktu – zdjęcie po lewej, opis po prawej
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const container = document.getElementById("product");
-  if (!container) return;
-
-  // ID produktu z URL (product.html?id=001)
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
-
-  let products = [];
-  try {
-    products = await loadJMProducts();
-  } catch (e) {
-    console.error("Błąd przy ładowaniu produktów:", e);
-    container.innerHTML = "<p>Nie udało się załadować produktu.</p>";
-    return;
+(function () {
+  // pomocnicze – usuwa wiodące "/" żeby działało z /images/... w repo /justmads-shop
+  function jmNormalizeImagePath(path) {
+    if (!path) return "";
+    return String(path).replace(/^\/+/, "");
   }
 
-  const product = products.find((p) => String(p.id) === String(id));
-  if (!product) {
-    container.innerHTML = "<p>Nie znaleziono produktu.</p>";
-    return;
-  }
-
-  const {
-    name_pl,
-    name_en,
-    price_pln,
-    size,
-    brand,
-    materials,
-    length_total,
-    width_p2p,
-    width_waist,
-    width_hips,
-    shoulder_width,
-    sleeve_pit,
-    length_bottom,
-    inseam,
-    desc_pl,
-  } = product;
-
-  const images = (product.images && product.images.length ? product.images : []);
-  const mainImg = images[0] || "";
-
-  // Budujemy HTML: lewa kolumna (galeria), prawa (detale)
-  container.innerHTML = `
-    <div class="jm-product-gallery">
-      ${
-        mainImg
-          ? `<img id="jm-main-image" src="${mainImg}" alt="${name_pl || name_en || ""}" />`
-          : `<div class="jm-product-placeholder">Brak zdjęcia produktu</div>`
+  function jmGetImages(product) {
+    var out = [];
+    ["img1", "img2", "img3", "img4"].forEach(function (key) {
+      if (product[key] && String(product[key]).trim()) {
+        out.push(jmNormalizeImagePath(product[key]));
       }
-      ${
-        images.length > 1
-          ? `<div class="jm-product-thumbs">
+    });
+    return out;
+  }
+
+  function jmCurrentLang() {
+    try {
+      var stored = window.localStorage && window.localStorage.getItem("jm_lang");
+      return stored === "en" ? "en" : "pl";
+    } catch (e) {
+      return "pl";
+    }
+  }
+
+  function jmFindProductById(id) {
+    if (!window.JM_PRODUCTS) return null;
+    return JM_PRODUCTS.find(function (p) { return String(p.id) === String(id); }) || null;
+  }
+
+  function init() {
+    var container = document.getElementById("product");
+    if (!container) return;
+
+    var params = new URLSearchParams(window.location.search);
+    var id = params.get("id");
+    if (!id) {
+      container.textContent = "Produkt nie znaleziony.";
+      return;
+    }
+
+    var product = jmFindProductById(id);
+    if (!product) {
+      container.textContent = "Produkt nie znaleziony.";
+      return;
+    }
+
+    var lang = jmCurrentLang();
+    var name =
+      lang === "en" && product.name_en
+        ? product.name_en
+        : product.name_pl || product.name_en || "";
+
+    var desc =
+      lang === "en" && product.desc_en
+        ? product.desc_en
+        : product.desc_pl || product.desc_en || "";
+
+    var price = product.price_pln ? product.price_pln + " PLN" : "";
+    var size = product.size || "";
+    var images = jmGetImages(product);
+    var mainImg = images.length ? images[0] : "";
+
+    container.innerHTML = `
+      <div class="jm-product-layout">
+        <div class="jm-product-gallery">
+          <div class="jm-product-main">
+            ${mainImg ? `<img src="${mainImg}" alt="${name}">` : ""}
+          </div>
+          ${
+            images.length > 1
+              ? `
+            <div class="jm-product-thumbs">
               ${images
                 .map(
-                  (src, idx) =>
-                    `<button class="jm-product-thumb-btn" data-idx="${idx}">
-                      zdjęcie ${idx + 1}
-                    </button>`
+                  (src, idx) => `
+                <img
+                  class="jm-product-thumb ${
+                    idx === 0 ? "jm-product-thumb-active" : ""
+                  }"
+                  src="${src}"
+                  data-index="${idx}"
+                  alt="${name} miniatura ${idx + 1}"
+                >
+              `
                 )
                 .join("")}
-            </div>`
-          : ""
-      }
-    </div>
-    <div class="jm-product-details">
-      <h1 class="jm-product-title">
-        ${name_pl || name_en || `Produkt ${product.id}`}
-      </h1>
+            </div>
+          `
+              : ""
+          }
+        </div>
 
-      <div class="jm-product-price-line">
-        ${
-          price_pln
-            ? `<span class="jm-product-price">${price_pln} PLN</span>`
-            : ""
-        }
-        ${
-          size
-            ? `<span class="jm-product-size-tag">${size}</span>`
-            : ""
-        }
+        <div class="jm-product-info-full">
+          <h1>${name}</h1>
+          ${
+            price
+              ? `<div class="jm-product-price-main">
+                  ${price}${
+                  size ? `<span class="jm-product-size"> ${size}</span>` : ""
+                }
+                 </div>`
+              : ""
+          }
+          <div class="jm-product-meta-main">
+            ${
+              product.brand
+                ? `<div><strong>Marka:</strong> ${product.brand}</div>`
+                : ""
+            }
+            ${
+              product.materials
+                ? `<div><strong>Skład:</strong> ${product.materials}</div>`
+                : ""
+            }
+          </div>
+          ${desc ? `<p>${desc}</p>` : ""}
+        </div>
       </div>
+    `;
 
-      ${
-        brand
-          ? `<p class="jm-product-brand"><strong>Marka:</strong> ${brand}</p>`
-          : ""
-      }
-      ${
-        materials
-          ? `<p class="jm-product-materials"><strong>Skład:</strong> ${materials}</p>`
-          : ""
-      }
-
-      ${
-        desc_pl
-          ? `<p class="jm-product-desc">
-              ${desc_pl}
-            </p>`
-          : ""
-      }
-
-      <div class="jm-product-measurements">
-        <h2>Wymiary</h2>
-        <ul>
-          ${length_total ? `<li>Długość całkowita: ${length_total} cm</li>` : ""}
-          ${width_p2p ? `<li>Szerokość pod pachami (p2p): ${width_p2p} cm</li>` : ""}
-          ${width_waist ? `<li>Szerokość w talii: ${width_waist} cm</li>` : ""}
-          ${width_hips ? `<li>Szerokość w biodrach: ${width_hips} cm</li>` : ""}
-          ${shoulder_width ? `<li>Szerokość w ramionach: ${shoulder_width} cm</li>` : ""}
-          ${sleeve_pit ? `<li>Długość rękawa od pachy: ${sleeve_pit} cm</li>` : ""}
-          ${length_bottom ? `<li>Długość nogawki od kroku: ${length_bottom} cm</li>` : ""}
-          ${inseam ? `<li>Długość wewnętrzna nogawki: ${inseam} cm</li>` : ""}
-        </ul>
-      </div>
-    </div>
-  `;
-
-  // Obsługa kliknięcia w miniatury – podmiana głównego zdjęcia
-  const mainImageEl = document.getElementById("jm-main-image");
-  if (mainImageEl && images.length > 1) {
-    container.querySelectorAll(".jm-product-thumb-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const idx = Number(btn.dataset.idx || 0);
-        mainImageEl.src = images[idx];
+    // obsługa miniaturek
+    var mainImgEl = container.querySelector(".jm-product-main img");
+    var thumbs = container.querySelectorAll(".jm-product-thumb");
+    thumbs.forEach(function (thumb) {
+      thumb.addEventListener("click", function () {
+        var src = thumb.getAttribute("src");
+        if (src && mainImgEl) {
+          mainImgEl.src = src;
+        }
+        thumbs.forEach(function (t) {
+          t.classList.remove("jm-product-thumb-active");
+        });
+        thumb.classList.add("jm-product-thumb-active");
       });
     });
   }
-});
+
+  document.addEventListener("DOMContentLoaded", init);
+})();
