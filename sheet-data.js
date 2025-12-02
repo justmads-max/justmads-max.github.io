@@ -1,8 +1,9 @@
 // Ładowanie produktów z Google Sheeta (GViz JSON)
-// Wersja: mapujemy po NAZWACH nagłówków (id, name_pl, image_1 itd.),
+// Mapujemy po NAZWACH nagłówków (id, name_pl, image_1 itd.),
 // ignorując wielkość liter i spacje w nagłówkach.
 
 async function loadJMProducts() {
+  // cache – żeby nie pobierać wiele razy
   if (window.JM_PRODUCTS_CACHE) return window.JM_PRODUCTS_CACHE;
 
   const sheetId = JM_SHEET_CONFIG.sheetId;
@@ -15,14 +16,14 @@ async function loadJMProducts() {
   const res = await fetch(url);
   const text = await res.text();
 
+  // parsujemy gviz
   const jsonStr = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
   const data = JSON.parse(jsonStr);
 
   const rows = data.table.rows || [];
   const cols = data.table.cols || [];
 
-  // budujemy mapę: znormalizowana_nazwa -> index kolumny
-  // normalizacja = trim + toLowerCase
+  // mapa: znormalizowana_nazwa -> index kolumny
   const colIndex = {};
   cols.forEach((col, idx) => {
     const labelRaw = col.label || "";
@@ -124,6 +125,9 @@ async function loadJMProducts() {
     })
     .filter((p) => p && p.status !== "sold");
 
+  // ⬇⬇⬇ KLUCZOWE: zapisujemy globalną zmienną
   window.JM_PRODUCTS_CACHE = mapped;
+  window.JM_PRODUCTS = mapped;
+
   return mapped;
 }
