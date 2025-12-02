@@ -1,7 +1,8 @@
 // shop-sheet.js
 
 (function () {
-  if (!window.JM_PRODUCTS) {
+  // sprawdź, czy JM_PRODUCTS w ogóle istnieje
+  if (typeof JM_PRODUCTS === "undefined" || !Array.isArray(JM_PRODUCTS)) {
     console.warn("JM_PRODUCTS not found");
     return;
   }
@@ -30,7 +31,8 @@
 
   function jmCurrentLang() {
     try {
-      var stored = window.localStorage && window.localStorage.getItem("jm_lang");
+      var stored =
+        window.localStorage && window.localStorage.getItem("jm_lang");
       return stored === "en" ? "en" : "pl";
     } catch (e) {
       return "pl";
@@ -81,32 +83,20 @@
         var price = p.price_pln ? p.price_pln + " PLN" : "";
         var size = p.size || "";
 
-        return `
-          <a href="product.html?id=${p.id}" class="jm-product-card">
-            <div class="jm-product-image-wrap">
-              ${
-                img
-                  ? `<img src="${img}" alt="${name}">`
-                  : ""
-              }
-            </div>
-            <div class="jm-product-info">
-              <h3 class="jm-product-name">${name}</h3>
-              <div class="jm-product-meta">
-                ${
-                  price
-                    ? `<span class="jm-product-price">${price}</span>`
-                    : ""
-                }
-                ${
-                  size
-                    ? `<span class="jm-product-size">${size}</span>`
-                    : ""
-                }
-              </div>
-            </div>
-          </a>
-        `;
+        return (
+          `<a href="product.html?id=${p.id}" class="jm-product-card">` +
+          `<div class="jm-product-image-wrap">` +
+          (img ? `<img src="${img}" alt="${name}">` : "") +
+          `</div>` +
+          `<div class="jm-product-info">` +
+          `<h3 class="jm-product-name">${name}</h3>` +
+          `<div class="jm-product-meta">` +
+          (price ? `<span class="jm-product-price">${price}</span>` : "") +
+          (size ? `<span class="jm-product-size">${size}</span>` : "") +
+          `</div>` +
+          `</div>` +
+          `</a>`
+        );
       })
       .join("");
   }
