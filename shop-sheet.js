@@ -1,79 +1,66 @@
 // shop-sheet.js
+// Prosta wersja: zakładamy, że sheet-data.js tworzy globalne JM_PRODUCTS = [...]
 
 (function () {
-  var grid = document.getElementById("products");
+  const grid = document.getElementById("products");
   if (!grid) return;
 
-  var categoryButtons = document.querySelectorAll(".cat-btn");
-
-  // --- skąd bierzemy dane ---
-
-  function getAllProducts() {
-    if (typeof window !== "undefined" && Array.isArray(window.JM_PRODUCTS)) {
-      return window.JM_PRODUCTS;
-    }
-    if (typeof JM_PRODUCTS !== "undefined" && Array.isArray(JM_PRODUCTS)) {
-      return JM_PRODUCTS;
-    }
-    return [];
+  // --- sprawdzamy, czy dane w ogóle istnieją ---
+  if (typeof JM_PRODUCTS === "undefined" || !Array.isArray(JM_PRODUCTS)) {
+    console.error("JM_PRODUCTS nie jest dostępne – sprawdź sheet-data.js");
+    grid.innerHTML = "<p>Brak danych produktów (błąd konfiguracji).</p>";
+    return;
   }
 
-  // --- helpers obrazki ---
+  // tylko dostępne
+  const ALL_PRODUCTS = JM_PRODUCTS.filter(
+    (p) => (p.status || "").toLowerCase() === "available"
+  );
 
-  function jmNormalizeImagePath(path) {
-    if (!path) return "";
-    return String(path).replace(/^\/+/, "");
-  }
+  // --- helpers ---
 
-  function jmGetAllImages(product) {
-    var out = [];
-    for (var key in product) {
-      if (!Object.prototype.hasOwnProperty.call(product, key)) continue;
-      if (/^img/i.test(key) && product[key] && String(product[key]).trim()) {
-        out.push(jmNormalizeImagePath(product[key]));
-      }
-    }
-    return out;
-  }
-
-  function jmGetMainImage(product) {
-    var imgs = jmGetAllImages(product);
-    return imgs.length ? imgs[0] : "";
-  }
-
-  // --- język ---
-
-  function jmCurrentLang() {
+  function currentLang() {
     try {
-      var stored =
-        window.localStorage && window.localStorage.getItem("jm_lang");
-      return stored === "en" ? "en" : "pl";
+      const v = window.localStorage.getItem("jm_lang");
+      return v === "en" ? "en" : "pl";
     } catch (e) {
       return "pl";
     }
   }
 
-  // --- filtrowanie ---
+  function getAllImages(p) {
+    const out = [];
+    for (const key in p) {
+      if (!Object.prototype.hasOwnProperty.call(p, key)) continue;
+      if (/^img/i.test(key) && p[key] && String(p[key]).trim()) {
+        let path = String(p[key]).trim();
+        // zostawiamy tak jak jest – u Ciebie to już działało
+        out.push(path);
+      }
+    }
+    return out;
+  }
 
-  function filterProducts(category) {
-    var all = getAllProducts();
+  function getMainImage(p) {
+    const imgs = getAllImages(p);
+    return imgs.length ? imgs[0] : "";
+  }
 
-    var items = all.filter(function (p) {
-      return (p.status || "").toLowerCase() === "available";
-    });
+  // --- filtrowanie wg kategorii z lewej ---
 
-    if (!category || category === "all") return items;
+  function filterByCategory(cat) {
+    if (!cat || cat === "all") return ALL_PRODUCTS;
 
-    if (category === "upcycled") {
-      return items.filter(function (p) {
-        var sub = (p.subcategory || "").toLowerCase();
+    if (cat === "upcycled") {
+      return ALL_PRODUCTS.filter((p) => {
+        const sub = (p.subcategory || "").toLowerCase();
         return sub.includes("upcycled") || sub.includes("upcykling");
       });
     }
 
-    if (category === "coats_jackets") {
-      return items.filter(function (p) {
-        var sub = (p.subcategory || "").toLowerCase();
+    if (cat === "coats_jackets") {
+      return ALL_PRODUCTS.filter((p) => {
+        const sub = (p.subcategory || "").toLowerCase();
         return (
           sub.includes("coat") ||
           sub.includes("płaszcz") ||
@@ -84,95 +71,81 @@
       });
     }
 
-    return items;
+    return ALL_PRODUCTS;
   }
 
   // --- render kart ---
 
-  function renderProducts(category) {
-    var lang = jmCurrentLang();
-    var products = filterProducts(category);
+  function renderProducts(cat) {
+    const lang = currentLang();
+    const products = filterByCategory(cat);
 
     if (!products.length) {
       grid.innerHTML = "<p>Brak produktów w tej kategorii.</p>";
       return;
     }
 
-    grid.innerHTML = products
-      .map(function (p) {
-        var name =
+    const cards = products
+      .map((p) => {
+        const name =
           lang === "en" && p.name_en
             ? p.name_en
             : p.name_pl || p.name_en || "";
 
-        var img = jmGetMainImage(p);
-        var price = p.price_pln ? p.price_pln + " PLN" : "";
-        var size = p.size || "";
+        const img = getMainImage(p);
+        const price = p.price_pln ? `${p.price_pln} PLN` : "";
+        const size = p.size || "";
 
-        return (
-          `<a href="product.html?id=${p.id}" class="jm-product-card">` +
-          `<div class="jm-product-image-wrap">` +
-          (img ? `<img src="${img}" alt="${name}">` : "") +
-          `</div>` +
-          `<div class="jm-product-info">` +
-          `<h3 class="jm-product-name">${name}</h3>` +
-          `<div class="jm-product-meta">` +
-          (price ? `<span class="jm-product-price">${price}</span>` : "") +
-          (size ? `<span class="jm-product-size">${size}</span>` : "") +
-          `</div>` +
-          `</div>` +
-          `</a>`
-        );
+        return `
+          <a href="product.html?id=${p.id}" class="jm-product-card">
+            <div class="jm-product-image-wrap">
+              ${
+                img
+                  ? `<img src="${img}" alt="${name}">`
+                  : ""
+              }
+            </div>
+            <div class="jm-product-info">
+              <h3 class="jm-product-name">${name}</h3>
+              <div class="jm-product-meta">
+                ${
+                  price
+                    ? `<span class="jm-product-price">${price}</span>`
+                    : ""
+                }
+                ${
+                  size
+                    ? `<span class="jm-product-size">${size}</span>`
+                    : ""
+                }
+              </div>
+            </div>
+          </a>
+        `;
       })
       .join("");
+
+    grid.innerHTML = cards;
   }
 
-  // --- obsługa kliknięć w kategorie ---
+  // --- obsługa kliknięć przycisków kategorii ---
 
-  categoryButtons.forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var cat = btn.getAttribute("data-category") || "all";
-
-      categoryButtons.forEach(function (b) {
-        b.classList.remove("active");
-      });
+  const catButtons = document.querySelectorAll(".cat-btn");
+  catButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const cat = btn.getAttribute("data-category") || "all";
+      catButtons.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
-
       renderProducts(cat);
     });
   });
 
-  // --- poczekaj, aż dane się pojawią ---
-
-  var attempts = 0;
-
-  function initialRender() {
-    attempts++;
-    var all = getAllProducts();
-
-    if (all.length) {
-      // ustaw aktywny przycisk "Wszystko" (jeśli jest)
-      var defaultCatBtn = document.querySelector(
-        '.cat-btn[data-category="all"]'
-      );
-      if (defaultCatBtn) {
-        categoryButtons.forEach(function (b) {
-          b.classList.remove("active");
-        });
-        defaultCatBtn.classList.add("active");
-      }
-      renderProducts("all");
-      return;
-    }
-
-    if (attempts < 20) {
-      // próbujemy jeszcze przez ~10s (co 500 ms)
-      setTimeout(initialRender, 500);
-    } else {
-      grid.innerHTML =
-        "<p>Brak produktów (błąd ładowania danych z arkusza).</p>";
-    }
+  // domyślnie: Wszystko
+  const allBtn = document.querySelector('.cat-btn[data-category="all"]');
+  if (allBtn) {
+    catButtons.forEach((b) => b.classList.remove("active"));
+    allBtn.classList.add("active");
   }
 
-  initialRender();
+  renderProducts("all");
 })();
