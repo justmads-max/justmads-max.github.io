@@ -1,22 +1,24 @@
 // product-sheet.js
 
 (function () {
-  function hasProducts() {
-    return typeof JM_PRODUCTS !== "undefined" && Array.isArray(JM_PRODUCTS);
-  }
+  var PRODUCTS =
+    (typeof JM_PRODUCTS !== "undefined" && Array.isArray(JM_PRODUCTS))
+      ? JM_PRODUCTS
+      : [];
 
   function jmNormalizeImagePath(path) {
     if (!path) return "";
     return String(path).replace(/^\/+/, "");
   }
 
-  function jmGetImages(product) {
+  function jmGetAllImages(product) {
     var out = [];
-    ["img1", "img2", "img3", "img4"].forEach(function (key) {
-      if (product[key] && String(product[key]).trim()) {
+    for (var key in product) {
+      if (!Object.prototype.hasOwnProperty.call(product, key)) continue;
+      if (/^img/i.test(key) && product[key] && String(product[key]).trim()) {
         out.push(jmNormalizeImagePath(product[key]));
       }
-    });
+    }
     return out;
   }
 
@@ -31,20 +33,14 @@
   }
 
   function jmFindProductById(id) {
-    if (!hasProducts()) return null;
     return (
-      JM_PRODUCTS.find(function (p) {
+      PRODUCTS.find(function (p) {
         return String(p.id) === String(id);
       }) || null
     );
   }
 
   function init() {
-    if (!hasProducts()) {
-      console.warn("JM_PRODUCTS not available on product page");
-      return;
-    }
-
     var container = document.getElementById("product");
     if (!container) return;
 
@@ -62,6 +58,7 @@
     }
 
     var lang = jmCurrentLang();
+
     var name =
       lang === "en" && product.name_en
         ? product.name_en
@@ -74,11 +71,11 @@
 
     var price = product.price_pln ? product.price_pln + " PLN" : "";
     var size = product.size || "";
-    var images = jmGetImages(product);
+    var images = jmGetAllImages(product);
     var mainImg = images.length ? images[0] : "";
 
+    // UWAGA: kontener MA klasę jm-product-layout – my tylko wypełniamy jego wnętrze
     container.innerHTML =
-      `<div class="jm-product-layout">` +
       `<div class="jm-product-gallery">` +
       `<div class="jm-product-main">` +
       (mainImg ? `<img src="${mainImg}" alt="${name}">` : "") +
@@ -113,10 +110,9 @@
         : "") +
       `</div>` +
       (desc ? `<p>${desc}</p>` : "") +
-      `</div>` +
       `</div>`;
 
-    // miniaturki
+    // miniaturki -> zmiana głównego zdjęcia
     var mainImgEl = container.querySelector(".jm-product-main img");
     var thumbs = container.querySelectorAll(".jm-product-thumb");
     thumbs.forEach(function (thumb) {

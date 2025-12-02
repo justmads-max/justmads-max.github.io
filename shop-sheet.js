@@ -1,33 +1,43 @@
 // shop-sheet.js
 
 (function () {
-  // sprawdź, czy JM_PRODUCTS w ogóle istnieje
-  if (typeof JM_PRODUCTS === "undefined" || !Array.isArray(JM_PRODUCTS)) {
-    console.warn("JM_PRODUCTS not found");
-    return;
-  }
+  // Bierzemy dane z globalnego JM_PRODUCTS (lub pustą tablicę, jeśli coś nie gra)
+  var ALL_PRODUCTS =
+    (typeof JM_PRODUCTS !== "undefined" && Array.isArray(JM_PRODUCTS))
+      ? JM_PRODUCTS
+      : [];
 
   var grid = document.getElementById("products");
   if (!grid) return;
 
   var categoryButtons = document.querySelectorAll(".cat-btn");
 
+  // --- Pomocnicze: obrazki ---
+
   function jmNormalizeImagePath(path) {
     if (!path) return "";
-    // usuń wiodące "/" żeby /images/... stało się images/...
+    // usuwamy wiodące "/" żeby "/images/..." => "images/..."
     return String(path).replace(/^\/+/, "");
   }
 
-  function jmGetMainImage(product) {
-    var keys = ["img1", "img2", "img3", "img4"];
-    for (var i = 0; i < keys.length; i++) {
-      var v = product[keys[i]];
-      if (v && String(v).trim()) {
-        return jmNormalizeImagePath(v);
+  // zbierz wszystkie pola zaczynające się na "img"
+  function jmGetAllImages(product) {
+    var out = [];
+    for (var key in product) {
+      if (!Object.prototype.hasOwnProperty.call(product, key)) continue;
+      if (/^img/i.test(key) && product[key] && String(product[key]).trim()) {
+        out.push(jmNormalizeImagePath(product[key]));
       }
     }
-    return "";
+    return out;
   }
+
+  function jmGetMainImage(product) {
+    var imgs = jmGetAllImages(product);
+    return imgs.length ? imgs[0] : "";
+  }
+
+  // --- język ---
 
   function jmCurrentLang() {
     try {
@@ -39,8 +49,10 @@
     }
   }
 
+  // --- filtrowanie po kategoriach ---
+
   function filterProducts(category) {
-    var items = JM_PRODUCTS.filter(function (p) {
+    var items = ALL_PRODUCTS.filter(function (p) {
       return (p.status || "").toLowerCase() === "available";
     });
 
@@ -49,7 +61,7 @@
     if (category === "upcycled") {
       return items.filter(function (p) {
         var sub = (p.subcategory || "").toLowerCase();
-        return sub.includes("upcycled");
+        return sub.includes("upcycled") || sub.includes("upcykling");
       });
     }
 
@@ -59,6 +71,7 @@
         return (
           sub.includes("coat") ||
           sub.includes("płaszcz") ||
+          sub.includes("plaszcz") ||
           sub.includes("marynarka") ||
           sub.includes("jacket")
         );
@@ -68,9 +81,16 @@
     return items;
   }
 
+  // --- render kart produktów ---
+
   function renderProducts(category) {
     var lang = jmCurrentLang();
     var products = filterProducts(category);
+
+    if (!products.length) {
+      grid.innerHTML = "<p>Brak produktów w tej kategorii.</p>";
+      return;
+    }
 
     grid.innerHTML = products
       .map(function (p) {
@@ -101,19 +121,22 @@
       .join("");
   }
 
-  // obsługa kliknięć w kategorie
+  // --- obsługa kliknięć w kategorie ---
+
   categoryButtons.forEach(function (btn) {
     btn.addEventListener("click", function () {
       var cat = btn.getAttribute("data-category") || "all";
+
       categoryButtons.forEach(function (b) {
         b.classList.remove("active");
       });
       btn.classList.add("active");
+
       renderProducts(cat);
     });
   });
 
-  // domyślnie: Wszystko
+  // Domyślnie: Wszystko
   var defaultCatBtn = document.querySelector('.cat-btn[data-category="all"]');
   if (defaultCatBtn) {
     defaultCatBtn.classList.add("active");
