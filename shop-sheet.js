@@ -1,26 +1,30 @@
 // shop-sheet.js
 
 (function () {
-  // Bierzemy dane z globalnego JM_PRODUCTS (lub pustą tablicę, jeśli coś nie gra)
-  var ALL_PRODUCTS =
-    (typeof JM_PRODUCTS !== "undefined" && Array.isArray(JM_PRODUCTS))
-      ? JM_PRODUCTS
-      : [];
-
   var grid = document.getElementById("products");
   if (!grid) return;
 
   var categoryButtons = document.querySelectorAll(".cat-btn");
 
-  // --- Pomocnicze: obrazki ---
+  // --- skąd bierzemy dane ---
+
+  function getAllProducts() {
+    if (typeof window !== "undefined" && Array.isArray(window.JM_PRODUCTS)) {
+      return window.JM_PRODUCTS;
+    }
+    if (typeof JM_PRODUCTS !== "undefined" && Array.isArray(JM_PRODUCTS)) {
+      return JM_PRODUCTS;
+    }
+    return [];
+  }
+
+  // --- helpers obrazki ---
 
   function jmNormalizeImagePath(path) {
     if (!path) return "";
-    // usuwamy wiodące "/" żeby "/images/..." => "images/..."
     return String(path).replace(/^\/+/, "");
   }
 
-  // zbierz wszystkie pola zaczynające się na "img"
   function jmGetAllImages(product) {
     var out = [];
     for (var key in product) {
@@ -49,10 +53,12 @@
     }
   }
 
-  // --- filtrowanie po kategoriach ---
+  // --- filtrowanie ---
 
   function filterProducts(category) {
-    var items = ALL_PRODUCTS.filter(function (p) {
+    var all = getAllProducts();
+
+    var items = all.filter(function (p) {
       return (p.status || "").toLowerCase() === "available";
     });
 
@@ -81,7 +87,7 @@
     return items;
   }
 
-  // --- render kart produktów ---
+  // --- render kart ---
 
   function renderProducts(category) {
     var lang = jmCurrentLang();
@@ -136,12 +142,37 @@
     });
   });
 
-  // Domyślnie: Wszystko
-  var defaultCatBtn = document.querySelector('.cat-btn[data-category="all"]');
-  if (defaultCatBtn) {
-    defaultCatBtn.classList.add("active");
-    renderProducts("all");
-  } else {
-    renderProducts("all");
+  // --- poczekaj, aż dane się pojawią ---
+
+  var attempts = 0;
+
+  function initialRender() {
+    attempts++;
+    var all = getAllProducts();
+
+    if (all.length) {
+      // ustaw aktywny przycisk "Wszystko" (jeśli jest)
+      var defaultCatBtn = document.querySelector(
+        '.cat-btn[data-category="all"]'
+      );
+      if (defaultCatBtn) {
+        categoryButtons.forEach(function (b) {
+          b.classList.remove("active");
+        });
+        defaultCatBtn.classList.add("active");
+      }
+      renderProducts("all");
+      return;
+    }
+
+    if (attempts < 20) {
+      // próbujemy jeszcze przez ~10s (co 500 ms)
+      setTimeout(initialRender, 500);
+    } else {
+      grid.innerHTML =
+        "<p>Brak produktów (błąd ładowania danych z arkusza).</p>";
+    }
   }
+
+  initialRender();
 })();

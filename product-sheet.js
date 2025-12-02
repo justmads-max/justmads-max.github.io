@@ -1,10 +1,15 @@
 // product-sheet.js
 
 (function () {
-  var PRODUCTS =
-    (typeof JM_PRODUCTS !== "undefined" && Array.isArray(JM_PRODUCTS))
-      ? JM_PRODUCTS
-      : [];
+  function getAllProducts() {
+    if (typeof window !== "undefined" && Array.isArray(window.JM_PRODUCTS)) {
+      return window.JM_PRODUCTS;
+    }
+    if (typeof JM_PRODUCTS !== "undefined" && Array.isArray(JM_PRODUCTS)) {
+      return JM_PRODUCTS;
+    }
+    return [];
+  }
 
   function jmNormalizeImagePath(path) {
     if (!path) return "";
@@ -33,14 +38,15 @@
   }
 
   function jmFindProductById(id) {
+    var all = getAllProducts();
     return (
-      PRODUCTS.find(function (p) {
+      all.find(function (p) {
         return String(p.id) === String(id);
       }) || null
     );
   }
 
-  function init() {
+  function renderProduct() {
     var container = document.getElementById("product");
     if (!container) return;
 
@@ -74,7 +80,7 @@
     var images = jmGetAllImages(product);
     var mainImg = images.length ? images[0] : "";
 
-    // UWAGA: kontener MA klasę jm-product-layout – my tylko wypełniamy jego wnętrze
+    // Uwaga: <div id="product" class="jm-product-layout"></div> już ma klasę layoutu.
     container.innerHTML =
       `<div class="jm-product-gallery">` +
       `<div class="jm-product-main">` +
@@ -112,7 +118,7 @@
       (desc ? `<p>${desc}</p>` : "") +
       `</div>`;
 
-    // miniaturki -> zmiana głównego zdjęcia
+    // miniaturki -> zmiana zdjęcia głównego
     var mainImgEl = container.querySelector(".jm-product-main img");
     var thumbs = container.querySelectorAll(".jm-product-thumb");
     thumbs.forEach(function (thumb) {
@@ -129,5 +135,15 @@
     });
   }
 
-  document.addEventListener("DOMContentLoaded", init);
+  // poczekaj aż dane z arkusza się załadują
+  function waitAndRender() {
+    var all = getAllProducts();
+    if (all.length) {
+      renderProduct();
+      return;
+    }
+    setTimeout(waitAndRender, 500);
+  }
+
+  document.addEventListener("DOMContentLoaded", waitAndRender);
 })();
