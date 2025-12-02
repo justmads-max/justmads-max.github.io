@@ -1,597 +1,180 @@
+/* =========================
+   RESET & PODSTAWY
+   ========================= */
+
 *,
 *::before,
-*::after{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:#050608;
-  color:#f7f5f2;
-}
-a{color:inherit;text-decoration:none}
-img{max-width:100%;display:block}
-
-/* NAV + HEADER */
-
-.jm-header{
-  background:radial-gradient(circle at top left,#f3c6ff 0,rgba(5,6,8,0.6) 40%,#050608 80%);
-  padding-bottom:2rem;
-}
-.jm-nav{
-  max-width:1120px;
-  margin:0 auto;
-  padding:1.2rem 1.5rem;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:1.5rem;
-}
-.jm-logo{display:flex;flex-direction:column}
-.jm-logo-main{font-weight:700;font-size:1.3rem;letter-spacing:.08em;text-transform:uppercase}
-.jm-logo-sub{font-size:.8rem;opacity:.8}
-.jm-nav-center{display:flex;gap:1rem;font-size:.95rem}
-.jm-nav-link{opacity:.9}
-.jm-nav-link:hover{opacity:1;text-decoration:underline}
-
-/* HERO */
-
-.jm-hero{
-  max-width:1120px;
-  margin:0 auto;
-  padding:0 1.5rem 2.5rem;
-}
-.jm-hero-text{max-width:620px}
-.jm-hero h1{
-  font-size:clamp(2rem,4vw,2.6rem);
-  line-height:1.2;
-  margin:0 0 1rem;
-}
-.jm-hero-sub{
-  margin:0 0 1.5rem;
-  opacity:.9;
-}
-.jm-hero-cta{display:flex;flex-wrap:wrap;gap:.8rem}
-.jm-btn-primary,
-.jm-btn-secondary{
-  border-radius:999px;
-  padding:.7rem 1.4rem;
-  font-size:.9rem;
-  border:1px solid transparent;
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-}
-.jm-btn-primary{
-  background:#f7f5f2;
-  color:#050608;
-}
-.jm-btn-primary:hover{background:#e7e3dc}
-.jm-btn-secondary{
-  background:transparent;
-  color:#f7f5f2;
-  border-color:rgba(247,245,242,.4);
-}
-.jm-btn-secondary:hover{
-  background:rgba(247,245,242,.1);
+*::after {
+  box-sizing: border-box;
 }
 
-/* GENERAL LAYOUT */
-
-.jm-section{
-  max-width:1120px;
-  margin:0 auto;
-  padding:2.4rem 1.5rem 3rem;
-}
-.jm-section-inner h2{margin-top:0;font-size:1.3rem}
-.jm-section-inner p{max-width:720px;opacity:.9}
-
-/* SHOP GRID */
-
-#products{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:1.3rem;
-  margin-top:1.5rem;
-}
-.jm-card{
-  border-radius:1.3rem;
-  border:1px solid rgba(247,245,242,.15);
-  padding:1.1rem 1.2rem;
-  background:linear-gradient(145deg,rgba(12,12,15,.9),rgba(35,28,40,.9));
-}
-.jm-card:hover{border-color:rgba(243,198,255,.8)}
-
-/* PRODUCT LIST CARDS – SMALL THUMB + TITLE + PRICE SIDE BY SIDE */
-
-.jm-card--product{
-  display:flex;
-  align-items:center;
-  gap:.9rem;
-  padding:.8rem .9rem;
-}
-.jm-card-image{
-  width:120px;
-  height:150px;
-  object-fit:cover;
-  border-radius:.9rem;
-  flex-shrink:0;
-  background:#000;
-}
-.jm-card-body h3{
-  margin:0 0 .2rem;
-  font-size:.96rem;
-}
-.jm-card-body .jm-product-price{
-  margin:0;
-  font-weight:600;
-  font-size:.9rem;
-}
-
-/* PRODUCT PAGE LAYOUT */
-
-.jm-product-layout {
-  display: flex;
-  align-items: flex-start;
-  gap: 2rem;
-  flex-wrap: nowrap; /* ważne – nie zawijamy w dół na desktopie */
-}
-/* Pierwsze dziecko w .jm-product-layout – kolumna ze zdjęciem */
-.jm-product-layout > *:first-child {
-  flex: 0 0 420px;   /* stała szerokość kolumny ze zdjęciem */
-  max-width: 100%;
-}
-
-/* Drugie dziecko – kolumna z opisem */
-.jm-product-layout > *:last-child {
-  flex: 1 1 auto;    /* reszta szerokości na opis */
-}
-
-}
-.jm-product-gallery{
-  flex:1 1 260px;
-  max-width:480px;
-}
-.jm-product-main{
-  border-radius:1.3rem;
-  overflow:hidden;
-  background:#000;
-}
-.jm-product-main img{
-  width:100%;
-  height:auto;
-}
-.jm-product-thumbs{
-  margin-top:.7rem;
-  display:flex;
-  flex-wrap:wrap;
-  gap:.5rem;
-}
-.jm-product-thumb{
-  width:70px;
-  max-height:110px;
-  object-fit:cover;
-  border-radius:.6rem;
-  border:1px solid transparent;
-  cursor:pointer;
-  opacity:.7;
-  background:#000;
-}
-.jm-product-thumb-active{
-  opacity:1;
-  border-color:rgba(243,198,255,.8);
-}
-.jm-product-info{
-  flex:1 1 260px;
-  min-width:0;
-}
-.jm-product-info h1{
-  margin-top:0;
-  margin-bottom:.5rem;
-  font-size:1.4rem;
-}
-.jm-product-price{
-  font-weight:600;
-  margin:.2rem 0 .8rem;
-}
-.jm-product-meta{
-  font-size:.9rem;
-  opacity:.85;
-  margin-top:.4rem;
-}
-
-/* FOOTER */
-
-.jm-footer{
-  border-top:1px solid rgba(247,245,242,.18);
-  padding:1.4rem 1.5rem 2rem;
-  text-align:center;
-  font-size:.85rem;
-  opacity:.8;
-}
-
-/* RESPONSIVE */
-
-@media (max-width:720px){
-  .jm-nav{flex-wrap:wrap}
-  .jm-nav-center{flex-wrap:wrap;justify-content:flex-start}
-
-  .jm-product-layout{
-    flex-direction:column;
-    flex-wrap:wrap;
-  }
-
-  .jm-product-layout > *:first-child,
-  .jm-product-layout > *:last-child {
-    flex: 1 1 auto;
-    max-width: 100%;
-  }
-
-}
-.jm-product-info {
-  padding: 8px 0;
-}
-
-.jm-product-name {
-  font-size: 0.95rem;
-  margin: 0 0 4px;
-}
-
-.jm-product-meta {
-  display: flex;
-  gap: 6px;
-  align-items: baseline;
-  font-size: 0.9rem;
-}
-
-.jm-product-price {
-  font-weight: 600;
-}
-
-.jm-product-size {
-  font-size: 0.85rem;
-  color: #666;
-}
-/* === SHOP GRID – ładna siatka kart === */
-
-#shop-grid,
-#products-grid,
-#products,
-#jm-products {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 24px;
-}
-
-/* Wygląd pojedynczej karty produktu */
-.jm-product-card {
-  background: #050505;
-  border-radius: 14px;
-  padding: 10px;
-  text-decoration: none;
-  color: #ffffff;
-  display: block;
-}
-
-/* Obrazek w karcie */
-.jm-product-image-wrap {
-  background: #111111;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.jm-product-image-wrap img {
-  width: 100%;
-  display: block;
-}
-
-/* Teksty w karcie */
-.jm-product-info {
-  padding: 4px 2px 0;
-}
-
-.jm-product-name {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin: 0 0 4px;
-}
-
-.jm-product-meta {
-  display: flex;
-  gap: 6px;
-  align-items: baseline;
-  font-size: 0.9rem;
-}
-
-.jm-product-price {
-  font-weight: 600;
-}
-
-.jm-product-size {
-  font-size: 0.85rem;
-  color: #aaaaaa;
-}
-
-.jm-card-image--placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  color: #ccc;
-}
-
-.jm-product-size-label {
-  font-size: 0.85rem;
-  color: #aaa;
-  margin-left: 4px;
-}
-
-/* === FIX: Tekst w kartach produktów nie wychodzi poza ramkę === */
-
-/* KONTENER KARTY */
-.jm-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  overflow: hidden;
-}
-
-/* ZDJĘCIE */
-.jm-card-image {
-  width: 100%;
-  height: 240px;
-  object-fit: cover;
-  border-radius: 10px;
-  flex-shrink: 0;
-}
-
-/* TEKST – wymuszamy, żeby nie wyłaził */
-.jm-card-body {
-  margin-top: 10px;
-  max-height: 90px; /* wysokość sekcji tekstowej */
-  overflow: hidden;
-}
-
-.jm-card-body h3 {
-  margin: 0 0 4px;
-  font-size: 0.92rem;
-  line-height: 1.25;
-  max-height: 50px;        /* dla stałej wysokości */
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;   /* max 2 linie nazwy */
-  -webkit-box-orient: vertical;
-  word-break: break-word;  /* łamanie długich słów */
-}
-
-/* CENA + ROZMIAR */
-.jm-product-price {
+body {
   margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.jm-product-size-label {
-  color: #bbb;
-  font-size: 0.85rem;
-}
-
-/* Placeholder jako solidna karta */
-.jm-card-image--placeholder {
-  height: 240px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #0f0f0f;
-  color: #999;
-  border-radius: 10px;
-  font-size: 0.85rem;
-}
-
-/* === LAYOUT SKLEPU: lista produktów + sidebar z kategoriami === */
-
-.jm-shop-layout {
-  display: flex;
-  align-items: flex-start;
-  gap: 2.5rem;
-}
-
-/* Sidebar MA BYĆ z lewej, więc dajemy mu order: 1 */
-.jm-shop-sidebar {
-  flex: 0 0 220px;
-  font-size: 0.9rem;
-  border-right: 1px solid rgba(247,245,242,0.18);
-  padding-right: 1.5rem;
-  order: 1;
-}
-
-/* Lista produktów po prawej */
-.jm-shop-main {
-  flex: 1 1 auto;
-  order: 2;
-}
-
-.jm-shop-sidebar h3 {
-  margin-top: 0;
-  margin-bottom: 0.8rem;
-  font-size: 1rem;
-}
-
-/* Lista filtrów */
-.jm-filter-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.jm-filter-pill {
-  border-radius: 999px;
-  border: 1px solid rgba(247,245,242,0.3);
-  background: transparent;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #050608;
   color: #f7f5f2;
-  padding: 0.35rem 0.9rem;
-  font-size: 0.85rem;
-  cursor: pointer;
-  text-align: left;
 }
 
-.jm-filter-pill:hover {
-  background: rgba(247,245,242,0.08);
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.jm-filter-pill--active {
-  background: #f7f5f2;
-  color: #050608;
-  border-color: #f7f5f2;
-}
-/* === Rozwijane kategorie w sidebarze (kategoria -> podkategorie) === */
-
-.jm-filter-category {
-  margin-bottom: 0.4rem;
+img {
+  max-width: 100%;
+  display: block;
 }
 
-.jm-filter-category-header {
-  width: 100%;
-  border-radius: 999px;
-  border: 1px solid rgba(247,245,242,0.3);
-  background: transparent;
-  color: #f7f5f2;
-  padding: 0.35rem 0.9rem;
-  font-size: 0.85rem;
-  cursor: pointer;
-  text-align: left;
+/* =========================
+   HEADER / NAV
+   ========================= */
+
+.jm-header {
+  background: radial-gradient(circle at top left, #f3c6ff 0, rgba(5, 6, 8, 0.6) 40%, #050608 80%);
+  padding-bottom: 2rem;
+}
+
+.jm-nav {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1.2rem 1.5rem;
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
 }
 
-.jm-filter-category-header:hover {
-  background: rgba(247,245,242,0.08);
-}
-
-.jm-filter-caret {
-  font-size: 0.75rem;
-  opacity: 0.8;
-  margin-left: 0.5rem;
-  transition: transform 0.15s ease;
-}
-
-.jm-filter-caret--collapsed {
-  transform: rotate(-90deg);
-}
-
-.jm-filter-sublist {
-  margin-top: 0.25rem;
-  margin-left: 0.4rem;
+.jm-logo {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
 }
 
-.jm-filter-sublist--collapsed {
-  display: none;
-}
-
-/* Podkategorie – trochę mniejsze pigułki */
-.jm-filter-pill--sub {
-  font-size: 0.8rem;
-  padding: 0.25rem 0.8rem;
-}
-
-
-/* Mobile – sidebar pod spodem / nad produktami */
-@media (max-width: 900px) {
-  .jm-shop-layout {
-    flex-direction: column;
-  }
-
-  .jm-shop-sidebar {
-    border-right: none;
-    padding-right: 0;
-    border-bottom: 1px solid rgba(247,245,242,0.18);
-    padding-bottom: 1rem;
-    width: 100%;
-  }
-}
-
-/* === Ustawienie stałej szerokości kart w sklepie === */
-
-/* Kontener z produktami jako flex z zawijaniem */
-#products,
-#shop-grid,
-#products-grid,
-#jm-products {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-}
-
-/* Karta produktu – stała, max szerokość */
-.jm-card.jm-card--product {
-  flex: 0 0 320px;      /* docelowa szerokość karty */
-  max-width: 320px;
-}
-
-/* Na wąskich ekranach pozwalamy na pełną szerokość */
-@media (max-width: 700px) {
-  .jm-card.jm-card--product {
-    flex: 1 1 100%;
-    max-width: 100%;
-  }
-.jm-lang-switch {
-  font-size: 0.9rem;
-  opacity: 0.9;
-  cursor: pointer;
-}
-
-.jm-lang-switch span {
-  cursor: pointer;
-  padding: 0 4px;
-}
-
-.jm-lang-switch .active {
+.jm-logo-main {
   font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.jm-logo-sub {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.jm-nav-center {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.95rem;
+}
+
+.jm-nav-link {
+  opacity: 0.9;
+}
+
+.jm-nav-link:hover {
+  opacity: 1;
   text-decoration: underline;
 }
 
-/* === SHOP LAYOUT: sidebar po lewej, produkty po prawej === */
+/* przełącznik języka */
 
-.jm-shop-layout {
-  display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
-  gap: 24px;
-  align-items: flex-start;
+.jm-lang-switch {
+  font-size: 0.9rem;
+  opacity: 0.95;
 }
 
-/* Panel kategorii (sidebar) */
-.jm-shop-sidebar {
-  align-self: flex-start;
+.jm-lang {
+  cursor: pointer;
 }
 
-/* Sekcja z produktami */
-.jm-shop-main {
-  min-width: 0;
+.jm-lang.active {
+  font-weight: 600;
 }
 
-/* Na mniejszych ekranach – układ pionowy (najpierw kategorie, pod nimi produkty) */
-@media (max-width: 768px) {
-  .jm-shop-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .jm-shop-sidebar {
-    order: 0;
-  }
-
-  .jm-shop-main {
-    order: 1;
-  }
-}
 /* =========================
-   LAYOUT SKLEPU: SIDEBAR + GRID
+   LAYOUT GŁÓWNY
+   ========================= */
+
+.jm-section {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2.4rem 1.5rem 3rem;
+}
+
+.jm-section-inner h2 {
+  margin-top: 0;
+  font-size: 1.3rem;
+}
+
+.jm-section-inner p {
+  max-width: 720px;
+  opacity: 0.9;
+}
+
+/* =========================
+   HERO (INDEX)
+   ========================= */
+
+.jm-hero {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 1.5rem 2.5rem;
+}
+
+.jm-hero-text {
+  max-width: 620px;
+}
+
+.jm-hero h1 {
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  line-height: 1.2;
+  margin: 0 0 1rem;
+}
+
+.jm-hero-sub {
+  margin: 0 0 1.5rem;
+  opacity: 0.9;
+}
+
+.jm-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.jm-btn-primary,
+.jm-btn-secondary {
+  border-radius: 999px;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.jm-btn-primary {
+  background: #f7f5f2;
+  color: #050608;
+}
+
+.jm-btn-primary:hover {
+  background: #e7e3dc;
+}
+
+.jm-btn-secondary {
+  background: transparent;
+  color: #f7f5f2;
+  border-color: rgba(247, 245, 242, 0.4);
+}
+
+.jm-btn-secondary:hover {
+  background: rgba(247, 245, 242, 0.1);
+}
+
+/* =========================
+   SKLEP – LAYOUT (SIDEBAR + GRID)
    ========================= */
 
 .shop-layout {
@@ -601,6 +184,7 @@ img{max-width:100%;display:block}
 }
 
 /* Lewy panel z kategoriami */
+
 .jm-categories {
   width: 230px;
   flex-shrink: 0;
@@ -616,12 +200,14 @@ img{max-width:100%;display:block}
 }
 
 /* Prawa część – lista produktów */
+
 .shop-content {
   flex: 1;
   min-width: 0;
 }
 
 /* Przyciski kategorii */
+
 .cat-btn {
   display: block;
   width: 100%;
@@ -646,6 +232,7 @@ img{max-width:100%;display:block}
 }
 
 /* Rodzic + strzałka */
+
 .cat-group {
   margin-top: 0.7rem;
 }
@@ -662,6 +249,7 @@ img{max-width:100%;display:block}
 }
 
 /* Podkategorie */
+
 .cat-sub {
   margin-top: 0.4rem;
   padding-left: 0.4rem;
@@ -671,8 +259,189 @@ img{max-width:100%;display:block}
   font-size: 0.85rem;
 }
 
-/* RESPONSYWNOŚĆ – na telefonie wszystko pod sobą */
+/* =========================
+   SKLEP – GRID PRODUKTÓW
+   ========================= */
+
+#products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 1.5rem;
+}
+
+/* Karta produktu */
+
+.jm-product-card {
+  background: radial-gradient(circle at top left, #111015 0, #120f16 40%, #120d18 100%);
+  border-radius: 22px;
+  padding: 10px;
+  text-decoration: none;
+  color: #ffffff;
+  display: block;
+  border: 1px solid rgba(247, 245, 242, 0.12);
+}
+
+.jm-product-card:hover {
+  border-color: rgba(243, 198, 255, 0.9);
+}
+
+/* Obrazek w karcie */
+
+.jm-product-image-wrap {
+  background: #000000;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.jm-product-image-wrap img {
+  width: 100%;
+  display: block;
+}
+
+/* Teksty w karcie */
+
+.jm-product-info {
+  padding: 4px 2px 0;
+}
+
+.jm-product-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 4px;
+  line-height: 1.3;
+  max-height: 2.6em; /* ~2 linijki */
+  overflow: hidden;
+}
+
+.jm-product-meta {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  font-size: 0.9rem;
+}
+
+.jm-product-price {
+  font-weight: 600;
+}
+
+.jm-product-size {
+  font-size: 0.85rem;
+  color: #aaaaaa;
+}
+
+/* =========================
+   STRONA PRODUKTU
+   ========================= */
+
+.jm-product-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.jm-product-gallery {
+  flex: 1 1 260px;
+  max-width: 480px;
+}
+
+.jm-product-main {
+  border-radius: 1.3rem;
+  overflow: hidden;
+  background: #000;
+}
+
+.jm-product-main img {
+  width: 100%;
+  height: auto;
+}
+
+.jm-product-thumbs {
+  margin-top: 0.7rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.jm-product-thumb {
+  width: 70px;
+  max-height: 110px;
+  object-fit: cover;
+  border-radius: 0.6rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  opacity: 0.7;
+  background: #000;
+}
+
+.jm-product-thumb-active {
+  opacity: 1;
+  border-color: rgba(243, 198, 255, 0.8);
+}
+
+/* Informacje o produkcie */
+
+.jm-product-info-full {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.jm-product-info-full h1 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+}
+
+.jm-product-price-main {
+  font-weight: 600;
+  margin: 0.2rem 0 0.4rem;
+}
+
+.jm-product-meta-main {
+  font-size: 0.9rem;
+  opacity: 0.85;
+  margin-bottom: 1rem;
+}
+
+.jm-back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.jm-back-link:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   STOPKA
+   ========================= */
+
+.jm-footer {
+  border-top: 1px solid rgba(247, 245, 242, 0.18);
+  padding: 1.4rem 1.5rem 2rem;
+  text-align: center;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* =========================
+   RESPONSYWNOŚĆ
+   ========================= */
+
 @media (max-width: 900px) {
+  .jm-nav {
+    flex-wrap: wrap;
+  }
+
+  .jm-nav-center {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
   .shop-layout {
     flex-direction: column;
   }
@@ -686,5 +455,12 @@ img{max-width:100%;display:block}
     margin-right: 0;
     margin-bottom: 1.5rem;
   }
-}
 
+  .jm-product-layout {
+    flex-direction: column;
+  }
+
+  .jm-product-gallery {
+    max-width: 100%;
+  }
+}
