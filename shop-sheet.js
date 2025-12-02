@@ -1,26 +1,25 @@
 // shop-sheet.js
 // Render sklepu + filtrowanie kategorii
 
-// Pomocniczo: budowanie pełnego URL do obrazka
+// Budowanie poprawnego URL do obrazka na podstawie wartości z arkusza
 function jmBuildImageUrl(raw) {
   if (!raw) return "";
-  const trimmed = String(raw).trim();
+  let trimmed = String(raw).trim();
   if (!trimmed) return "";
 
-  // Jeśli już pełny URL (http / https) – zostaw
+  // Pełny URL z arkusza (np. https://...)
   if (/^https?:\/\//i.test(trimmed)) {
     return trimmed;
   }
 
-  // Jeśli mamy bazę obrazków z sheet-config.js – doklej
-  const base =
-    typeof JM_IMAGE_BASE !== "undefined" && JM_IMAGE_BASE
-      ? JM_IMAGE_BASE.replace(/\/+$/, "")
-      : "";
+  // Jeśli w arkuszu jest już ścieżka typu /images/... albo images/...
+  if (/^\/?images\//i.test(trimmed)) {
+    // dopilnujemy tylko, żeby zaczynało się od "/"
+    return trimmed.startsWith("/") ? trimmed : "/" + trimmed;
+  }
 
-  if (!base) return trimmed;
-
-  return base + "/" + trimmed.replace(/^\/+/, "");
+  // Dla krótkich nazw typu "product-001/front.png"
+  return "/images/" + trimmed.replace(/^\/+/, "");
 }
 
 async function jmInitShop() {
@@ -48,10 +47,7 @@ async function jmInitShop() {
 
     // Rodzic "Ubrania / Clothing"
     if (catLower === "clothing") {
-      return (
-        category === "ubrania" ||
-        category === "clothing"
-      );
+      return category === "ubrania" || category === "clothing";
     }
 
     // Konkretny typ
@@ -128,7 +124,7 @@ async function jmInitShop() {
     });
   });
 
-  // Domyślnie "Wszystko"
+  // Domyślnie „Wszystko”
   const defaultBtn = catButtons.find(
     (b) => b.getAttribute("data-category") === "all"
   );
