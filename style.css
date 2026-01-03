@@ -505,3 +505,13 @@ img {
     max-width: 100%;
   }
 }
+.jm-logo {
+  text-decoration: none;
+  color: inherit;
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.jm-logo:hover {
+  opacity: 0.9;
+}
